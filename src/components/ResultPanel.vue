@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
+import { useI18n } from 'vue-i18n';
 import { DocumentCopy, Download, Loading } from '@element-plus/icons-vue';
 import type { ExecuteResult } from '../api/execute';
 
@@ -9,6 +10,11 @@ const props = defineProps<{
   loading?: boolean;
 }>();
 
+const emit = defineEmits<{
+  (e: 'retry-with-server'): void;
+}>();
+
+const { t } = useI18n();
 const activeTab = ref<'body' | 'headers' | 'raw'>('body');
 
 watch(
@@ -17,6 +23,12 @@ watch(
     activeTab.value = 'body';
   }
 );
+
+const isMac = computed(() => {
+  if (typeof navigator === 'undefined') return false;
+  return /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+});
+const hotkeyRun = computed(() => (isMac.value ? '⌘↵' : 'Ctrl+↵'));
 
 const statusTone = computed<'success' | 'warning' | 'danger' | 'info'>(() => {
   const code = props.result?.statusCode;
@@ -61,9 +73,9 @@ async function copyBody() {
   if (!props.result) return;
   try {
     await navigator.clipboard.writeText(prettyBody.value);
-    ElMessage.success('响应体已复制');
+    ElMessage.success(t('messages.copyBodyOk'));
   } catch {
-    ElMessage.warning('复制失败');
+    ElMessage.warning(t('messages.copyFailed'));
   }
 }
 
@@ -81,7 +93,6 @@ function downloadBody() {
   URL.revokeObjectURL(url);
 }
 
-/** 简易 JSON 语法高亮 */
 function highlightJson(json: string): string {
   if (!json) return '';
   const escaped = json
@@ -108,19 +119,23 @@ const highlightedBody = computed(() => {
   if (!isJson.value) return '';
   return highlightJson(prettyBody.value);
 });
+
+const headerCount = computed(() =>
+  (props.result?.headers ?? []).reduce((acc, b) => acc + b.headers.length, 0)
+);
 </script>
 
 <template>
   <div class="result-root">
     <div v-if="!result && !loading" class="empty">
       <div class="empty-icon">⌁</div>
-      <div class="empty-title">还没有结果</div>
-      <div class="empty-sub">在左侧编辑 curl 命令，点击「执行」或按 ⌘↵</div>
+      <div class="empty-title">{{ t('result.emptyTitle') }}</div>
+      <div class="empty-sub">{{ t('result.emptyHint', { hotkey: hotkeyRun }) }}</div>
     </div>
 
     <div v-else-if="loading && !result" class="empty">
       <el-icon class="is-loading" :size="24"><Loading /></el-icon>
-      <div class="empty-sub" style="margin-top: 10px">正在执行...</div>
+      <div class="empty-sub" style="margin-top: 10px">{{ t('result.running') }}</div>
     </div>
 
     <template v-else-if="result">
@@ -141,31 +156,44 @@ const highlightedBody = computed(() => {
 
         <div class="meta-row">
           <div class="meta-item">
-            <span class="meta-label">耗时</span>
+            <span class="meta-label">{{ t('result.metaTime') }}</span>
             <span class="meta-value">{{
               result.timeMs != null ? result.timeMs + ' ms' : '-'
             }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">大小</span>
+            <span class="meta-label">{{ t('result.metaSize') }}</span>
             <span class="meta-value">{{ formatSize(result.sizeBytes) }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">类型</span>
+            <span class="meta-label">{{ t('result.metaType') }}</span>
             <span class="meta-value mono">{{ result.contentType || '-' }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">退出</span>
+            <span class="meta-label">{{ t('result.metaExit') }}</span>
             <span class="meta-value">{{ result.exitCode ?? '-' }}</span>
           </div>
         </div>
 
         <div v-if="result.error" class="error-block">
-          <div class="error-title">执行错误</div>
+          <div class="error-title">{{ t('result.errorTitle') }}</div>
           <pre>{{ result.error }}{{ result.hint ? '\n' + result.hint : '' }}</pre>
+          <div v-if="result.corsLike && result.engine === 'browser'" class="error-action">
+            <div class="cors-hint">{{ t('engine.corsHint') }}</div>
+            <el-button size="small" type="primary" @click="emit('retry-with-server')">
+              {{ t('engine.retryWithServer') }}
+            </el-button>
+          </div>
+        </div>
+
+        <div v-if="result.unsupported && result.unsupported.length" class="warn-block">
+          <div class="warn-title">{{ t('engine.unsupportedTitle') }}</div>
+          <ul class="warn-list">
+            <li v-for="(u, idx) in result.unsupported" :key="idx">{{ u }}</li>
+          </ul>
         </div>
         <div v-if="result.stderr" class="error-block stderr">
-          <div class="error-title">stderr</div>
+          <div class="error-title">{{ t('result.stderrTitle') }}</div>
           <pre>{{ result.stderr }}</pre>
         </div>
       </div>
@@ -176,41 +204,45 @@ const highlightedBody = computed(() => {
           :class="{ active: activeTab === 'body' }"
           @click="activeTab = 'body'"
         >
-          响应体
+          {{ t('result.tabBody') }}
         </button>
         <button
           class="tab"
           :class="{ active: activeTab === 'headers' }"
           @click="activeTab = 'headers'"
         >
-          响应头
-          <span class="badge" v-if="result.headers.length">
-            {{ result.headers.reduce((acc, b) => acc + b.headers.length, 0) }}
-          </span>
+          {{ t('result.tabHeaders') }}
+          <span class="badge" v-if="headerCount">{{ headerCount }}</span>
         </button>
         <button
           class="tab"
           :class="{ active: activeTab === 'raw' }"
           @click="activeTab = 'raw'"
         >
-          原始
+          {{ t('result.tabRaw') }}
         </button>
 
         <div class="tab-actions">
-          <el-button :icon="DocumentCopy" link @click="copyBody">复制</el-button>
-          <el-button :icon="Download" link @click="downloadBody">下载</el-button>
+          <el-button :icon="DocumentCopy" link @click="copyBody">
+            {{ t('result.actionCopy') }}
+          </el-button>
+          <el-button :icon="Download" link @click="downloadBody">
+            {{ t('result.actionDownload') }}
+          </el-button>
         </div>
       </div>
 
       <div class="tab-body">
         <template v-if="activeTab === 'body'">
-          <div v-if="!result.body" class="muted">（空响应体）</div>
+          <div v-if="!result.body" class="muted">{{ t('result.emptyBody') }}</div>
           <pre v-else-if="isJson" class="code" v-html="highlightedBody" />
           <pre v-else class="code">{{ prettyBody }}</pre>
         </template>
 
         <template v-else-if="activeTab === 'headers'">
-          <div v-if="!result.headers.length" class="muted">（无响应头）</div>
+          <div v-if="!result.headers.length" class="muted">
+            {{ t('result.emptyHeaders') }}
+          </div>
           <div v-else class="headers-list">
             <div
               v-for="(block, bi) in result.headers"
@@ -323,14 +355,14 @@ const highlightedBody = computed(() => {
 
 .error-block {
   margin-top: 12px;
-  border: 1px solid rgba(255, 93, 108, 0.4);
-  background: rgba(255, 93, 108, 0.08);
+  border: 1px solid rgba(214, 57, 72, 0.35);
+  background: rgba(214, 57, 72, 0.08);
   border-radius: 8px;
   padding: 10px 12px;
 }
 .error-block.stderr {
-  border-color: rgba(255, 180, 84, 0.35);
-  background: rgba(255, 180, 84, 0.06);
+  border-color: rgba(194, 112, 10, 0.3);
+  background: rgba(194, 112, 10, 0.06);
 }
 .error-title {
   font-size: 12px;
@@ -348,6 +380,44 @@ const highlightedBody = computed(() => {
   color: var(--text);
   white-space: pre-wrap;
   word-break: break-word;
+}
+.error-action {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cors-hint {
+  flex: 1;
+  min-width: 200px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.warn-block {
+  margin-top: 12px;
+  border: 1px solid rgba(194, 112, 10, 0.3);
+  background: rgba(194, 112, 10, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.warn-title {
+  font-size: 12px;
+  color: var(--warn);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.warn-list {
+  margin: 0;
+  padding-left: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+}
+.warn-list li {
+  line-height: 1.6;
 }
 
 .tab-row {
@@ -387,7 +457,7 @@ const highlightedBody = computed(() => {
 }
 .badge {
   font-size: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--kbd-bg);
   border-radius: 8px;
   padding: 1px 6px;
 }
@@ -461,21 +531,20 @@ const highlightedBody = computed(() => {
   color: var(--text);
 }
 
-/* JSON 高亮配色 */
 :deep(.tok-key) {
-  color: #7fb4ff;
+  color: var(--tok-key);
 }
 :deep(.tok-str) {
-  color: #2bd9b1;
+  color: var(--tok-str);
 }
 :deep(.tok-num) {
-  color: #ffb454;
+  color: var(--tok-num);
 }
 :deep(.tok-bool) {
-  color: #ff7eb6;
+  color: var(--tok-bool);
 }
 :deep(.tok-null) {
-  color: #9aa3b2;
+  color: var(--tok-null);
   font-style: italic;
 }
 </style>

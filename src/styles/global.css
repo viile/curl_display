@@ -1,16 +1,105 @@
+/* ============================================================
+   Theme tokens
+   Default (no attr) = light. [data-theme="dark"] overrides.
+   ============================================================ */
+
 :root {
+  /* surfaces */
+  --bg: #f5f6fa;
+  --panel: #ffffff;
+  --panel-2: #f1f3f8;
+  --header-from: #ffffff;
+  --header-to: #f1f3f8;
+
+  /* borders */
+  --border: #e4e7ee;
+  --border-strong: #d1d5dc;
+
+  /* text */
+  --text: #1f2430;
+  --text-dim: #5b6473;
+  --text-mute: #8a909c;
+  --text-faint: #b8bcc6;
+
+  /* state */
+  --hover: rgba(124, 92, 255, 0.08);
+  --hover-strong: rgba(124, 92, 255, 0.14);
+  --active: rgba(43, 217, 177, 0.1);
+  --active-border: rgba(43, 217, 177, 0.45);
+  --selection-bg: rgba(124, 92, 255, 0.2);
+
+  /* keyboard cap */
+  --kbd-bg: rgba(0, 0, 0, 0.06);
+  --kbd-text: #4b5563;
+
+  /* status / accent (similar in both themes) */
+  --accent: #6240e8;
+  --accent-2: #0ea884;
+  --danger: #d63948;
+  --warn: #c2700a;
+
+  /* code tokens (JSON syntax) */
+  --tok-key: #2563eb;
+  --tok-str: #0e8b6a;
+  --tok-num: #b06200;
+  --tok-bool: #c4407a;
+  --tok-null: #6b7280;
+
+  /* brand title gradient (light theme needs darker tones for contrast) */
+  --brand-from: #6240e8;
+  --brand-to: #0e8b6a;
+
+  /* misc */
+  --scroll: #d4d7dd;
+  --scroll-hover: #b6bac3;
+  --shadow-strong: 0 14px 40px rgba(35, 40, 60, 0.18);
+
+  /* monospace fonts */
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}
+
+:root[data-theme='dark'] {
   --bg: #0f1115;
   --panel: #161922;
   --panel-2: #1c2030;
+  --header-from: #181c27;
+  --header-to: #11131a;
+
   --border: #2a2f3d;
+  --border-strong: #3a4159;
+
   --text: #e6e9ef;
   --text-dim: #9aa3b2;
+  --text-mute: #6c7388;
+  --text-faint: #545b6e;
+
+  --hover: rgba(124, 92, 255, 0.12);
+  --hover-strong: rgba(124, 92, 255, 0.22);
+  --active: rgba(43, 217, 177, 0.1);
+  --active-border: rgba(43, 217, 177, 0.35);
+  --selection-bg: rgba(124, 92, 255, 0.35);
+
+  --kbd-bg: rgba(255, 255, 255, 0.1);
+  --kbd-text: rgba(255, 255, 255, 0.85);
+
   --accent: #7c5cff;
   --accent-2: #2bd9b1;
   --danger: #ff5d6c;
   --warn: #ffb454;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+
+  --tok-key: #7fb4ff;
+  --tok-str: #2bd9b1;
+  --tok-num: #ffb454;
+  --tok-bool: #ff7eb6;
+  --tok-null: #9aa3b2;
+
+  --brand-from: #7c5cff;
+  --brand-to: #2bd9b1;
+
+  --scroll: #2f3548;
+  --scroll-hover: #3b425a;
+  --shadow-strong: 0 14px 40px rgba(0, 0, 0, 0.55);
 }
 
 * {
@@ -32,6 +121,12 @@ body {
     Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   font-size: 14px;
   overflow: hidden;
+  /* 切换主题时让背景/文字色平滑过渡 */
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+::selection {
+  background: var(--selection-bg);
 }
 
 ::-webkit-scrollbar {
@@ -42,11 +137,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2f3548;
+  background: var(--scroll);
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b425a;
+  background: var(--scroll-hover);
 }
 
 /* element-plus 暗色适配的细节覆盖 */
@@ -55,4 +150,20 @@ body {
 }
 .el-tag {
   font-weight: 600;
+}
+
+/* ===== RTL 适配 ===== */
+[dir='rtl'] textarea,
+[dir='rtl'] pre,
+[dir='rtl'] code,
+[dir='rtl'] .ltr-force {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+[dir='rtl'] .kbd {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
 }

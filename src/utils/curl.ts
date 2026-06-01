@@ -240,3 +240,80 @@ export function minifyCurl(input: string): string {
     .replace(/[ \t]+/g, ' ')
     .trim();
 }
+
+export interface CurlSummary {
+  method: string;
+  url: string;
+}
+
+/**
+ * 从 curl 命令中提取方法和 URL，用于历史列表预览。
+ * 容错：解析失败也返回空字符串而非抛错。
+ */
+export function extractCurlSummary(input: string): CurlSummary {
+  let tokens: string[];
+  try {
+    tokens = tokenizeCurl(input);
+  } catch {
+    return { method: '', url: '' };
+  }
+  let method = '';
+  let url = '';
+  let i = 1; // 跳过 'curl'
+  while (i < tokens.length) {
+    const a = tokens[i];
+    if (a === '-X' || a === '--request') {
+      method = (tokens[i + 1] || '').toUpperCase();
+      i += 2;
+      continue;
+    }
+    if (a.startsWith('--request=')) {
+      method = a.slice('--request='.length).toUpperCase();
+      i += 1;
+      continue;
+    }
+    if (a === '--url') {
+      url = tokens[i + 1] || '';
+      i += 2;
+      continue;
+    }
+    if (a.startsWith('--url=')) {
+      url = a.slice('--url='.length);
+      i += 1;
+      continue;
+    }
+    // 跳过其它带值 flag
+    if (a.startsWith('-')) {
+      const isLong = a.startsWith('--');
+      const isInline = a.includes('=') && isLong;
+      if (isInline) {
+        i += 1;
+        continue;
+      }
+      // 简单近似：所有非布尔短/长 flag 后跟一个值
+      const flagsWithValue = new Set([
+        '-H', '--header', '-d', '--data', '--data-raw', '--data-binary',
+        '--data-urlencode', '-F', '--form', '-A', '--user-agent', '-b',
+        '--cookie', '-c', '--cookie-jar', '-e', '--referer', '-o', '--output',
+        '-u', '--user', '-T', '--upload-file', '-w', '--write-out', '-x',
+        '--proxy', '-D', '--dump-header', '-K', '--config', '--cacert',
+        '--cert', '--key', '--connect-timeout', '--max-time', '--retry',
+        '--resolve',
+      ]);
+      if (flagsWithValue.has(a)) {
+        i += 2;
+      } else if (!isLong && a.length > 2 && flagsWithValue.has(a.slice(0, 2))) {
+        i += 1; // 粘连写法 -Hxxx
+      } else {
+        i += 1;
+      }
+      continue;
+    }
+    if (!url) {
+      url = a;
+    }
+    i += 1;
+  }
+  if (!method) method = 'GET';
+  return { method, url };
+}

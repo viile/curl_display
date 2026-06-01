@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { ElMessage } from 'element-plus';
+import { useI18n } from 'vue-i18n';
 import { CaretRight, Brush, Delete, DocumentCopy, Loading } from '@element-plus/icons-vue';
 import { formatCurl, minifyCurl } from '../utils/curl';
+import HistoryMenu from './HistoryMenu.vue';
+import EngineSwitcher from './EngineSwitcher.vue';
+import type { HistoryItem } from '../composables/useHistory';
 
 const props = defineProps<{
   modelValue: string;
@@ -13,8 +17,10 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
   (e: 'run'): void;
   (e: 'clear'): void;
+  (e: 'pick-history', item: HistoryItem): void;
 }>();
 
+const { t } = useI18n();
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
 const value = computed({
@@ -25,12 +31,19 @@ const value = computed({
 const lineCount = computed(() => value.value.split('\n').length);
 const charCount = computed(() => value.value.length);
 
+const isMac = computed(() => {
+  if (typeof navigator === 'undefined') return false;
+  return /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+});
+const kbdRun = computed(() => (isMac.value ? '⌘↵' : 'Ctrl+↵'));
+const kbdFormat = computed(() => (isMac.value ? '⌘⇧F' : 'Ctrl+Shift+F'));
+
 function handleFormat() {
   try {
     value.value = formatCurl(value.value);
-    ElMessage.success('已格式化');
+    ElMessage.success(t('messages.formatted'));
   } catch (e: any) {
-    ElMessage.error(`格式化失败：${e?.message || e}`);
+    ElMessage.error(t('messages.formatFailed', { msg: e?.message || e }));
   }
 }
 
@@ -38,16 +51,16 @@ function handleMinify() {
   try {
     value.value = minifyCurl(value.value);
   } catch (e: any) {
-    ElMessage.error(`压缩失败：${e?.message || e}`);
+    ElMessage.error(t('messages.minifyFailed', { msg: e?.message || e }));
   }
 }
 
 async function handleCopy() {
   try {
     await navigator.clipboard.writeText(value.value);
-    ElMessage.success('已复制到剪贴板');
+    ElMessage.success(t('messages.copied'));
   } catch {
-    ElMessage.warning('复制失败，请手动复制');
+    ElMessage.warning(t('messages.copyFailed'));
   }
 }
 
@@ -58,19 +71,16 @@ function handleClear() {
 }
 
 function handleKeyDown(e: KeyboardEvent) {
-  // Cmd/Ctrl + Enter 执行
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
     e.preventDefault();
     emit('run');
     return;
   }
-  // Cmd/Ctrl + Shift + F 格式化
   if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
     e.preventDefault();
     handleFormat();
     return;
   }
-  // Tab -> 插入两个空格
   if (e.key === 'Tab') {
     e.preventDefault();
     const ta = e.target as HTMLTextAreaElement;
@@ -95,16 +105,27 @@ function handleKeyDown(e: KeyboardEvent) {
           :loading="props.loading"
           @click="emit('run')"
         >
-          执行 <span class="kbd">⌘↵</span>
+          {{ t('editor.run') }} <span class="kbd">{{ kbdRun }}</span>
         </el-button>
         <el-button :icon="Brush" @click="handleFormat">
-          格式化 <span class="kbd">⌘⇧F</span>
+          {{ t('editor.format') }} <span class="kbd">{{ kbdFormat }}</span>
         </el-button>
-        <el-button :icon="DocumentCopy" plain @click="handleMinify">压缩</el-button>
+        <el-button :icon="DocumentCopy" plain @click="handleMinify">
+          {{ t('editor.minify') }}
+        </el-button>
+        <HistoryMenu
+          :current-command="value"
+          @pick="(item) => emit('pick-history', item)"
+        />
       </div>
       <div class="toolbar-right">
-        <el-button :icon="DocumentCopy" link @click="handleCopy">复制</el-button>
-        <el-button :icon="Delete" link type="danger" @click="handleClear">清空</el-button>
+        <EngineSwitcher />
+        <el-button :icon="DocumentCopy" link @click="handleCopy">
+          {{ t('editor.copy') }}
+        </el-button>
+        <el-button :icon="Delete" link type="danger" @click="handleClear">
+          {{ t('editor.clear') }}
+        </el-button>
       </div>
     </div>
 
@@ -119,17 +140,19 @@ function handleKeyDown(e: KeyboardEvent) {
         autocorrect="off"
         autocapitalize="off"
         class="editor"
-        placeholder="在此粘贴或输入 curl 命令...\n\n示例：\ncurl https://httpbin.org/post -X POST -H 'Content-Type: application/json' -d '{&quot;a&quot;:1}'"
+        :placeholder="t('editor.placeholder')"
         @keydown="handleKeyDown"
       />
     </div>
 
     <div class="statusbar">
-      <span>{{ lineCount }} 行</span>
+      <span>{{ t('editor.statusLines', { n: lineCount }) }}</span>
       <span class="dot">·</span>
-      <span>{{ charCount }} 字符</span>
+      <span>{{ t('editor.statusChars', { n: charCount }) }}</span>
       <span class="spacer" />
-      <span class="hint">Tab = 2 空格 · ⌘↵ 执行 · ⌘⇧F 格式化</span>
+      <span class="hint">{{
+        t('editor.statusHint', { run: kbdRun, format: kbdFormat })
+      }}</span>
     </div>
   </div>
 </template>
@@ -164,9 +187,9 @@ function handleKeyDown(e: KeyboardEvent) {
   font-family: var(--mono);
   font-size: 11px;
   padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--kbd-bg);
   border-radius: 4px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--kbd-text);
 }
 
 .editor-body {
@@ -184,7 +207,7 @@ function handleKeyDown(e: KeyboardEvent) {
   font-family: var(--mono);
   font-size: 13px;
   line-height: 1.6;
-  color: #545b6e;
+  color: var(--text-faint);
   user-select: none;
   background: var(--panel);
   border-right: 1px solid var(--border);
@@ -208,7 +231,7 @@ function handleKeyDown(e: KeyboardEvent) {
   tab-size: 2;
 }
 .editor::placeholder {
-  color: #4a5066;
+  color: var(--text-faint);
   white-space: pre-wrap;
 }
 
@@ -232,6 +255,6 @@ function handleKeyDown(e: KeyboardEvent) {
 .hint {
   font-family: var(--mono);
   font-size: 11px;
-  color: #6c7388;
+  color: var(--text-mute);
 }
 </style>

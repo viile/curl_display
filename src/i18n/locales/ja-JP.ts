@@ -1,0 +1,98 @@
+import type { Messages } from './types';
+
+const messages: Messages = {
+  app: {
+    title: 'cURL Runner',
+    subtitle: 'ローカルで実行 · フォーマット · 結果を可視化',
+    docsLink: 'curl ドキュメント',
+    language: '言語',
+  },
+
+  editor: {
+    run: '実行',
+    running: '実行中',
+    format: 'フォーマット',
+    minify: '圧縮',
+    copy: 'コピー',
+    clear: 'クリア',
+    placeholder:
+      'ここに curl コマンドを貼り付けるか入力してください...\n\n例:\ncurl https://httpbin.org/post -X POST -H \'Content-Type: application/json\' -d \'{"a":1}\'',
+    statusLines: '{n} 行',
+    statusChars: '{n} 文字',
+    statusHint: 'Tab = 2 スペース · {run} 実行 · {format} フォーマット',
+  },
+
+  messages: {
+    emptyCommand: 'curl コマンドを入力してください',
+    formatted: 'フォーマット完了',
+    formatFailed: 'フォーマット失敗: {msg}',
+    minifyFailed: '圧縮失敗: {msg}',
+    copied: 'クリップボードにコピーしました',
+    copyBodyOk: 'レスポンスボディをコピーしました',
+    copyFailed: 'コピーに失敗しました。手動でコピーしてください',
+    requestFailed: 'リクエスト失敗: {msg}',
+  },
+
+  result: {
+    emptyTitle: 'まだ結果はありません',
+    emptyHint: '左側で curl コマンドを編集し、「実行」をクリックするか {hotkey} を押してください',
+    running: '実行中...',
+    metaTime: '時間',
+    metaSize: 'サイズ',
+    metaType: 'タイプ',
+    metaExit: '終了',
+    errorTitle: '実行エラー',
+    stderrTitle: 'stderr',
+    tabBody: 'ボディ',
+    tabHeaders: 'ヘッダー',
+    tabRaw: '生データ',
+    actionCopy: 'コピー',
+    actionDownload: 'ダウンロード',
+    emptyBody: '(空のボディ)',
+    emptyHeaders: '(ヘッダーなし)',
+  },
+
+  consent: {
+    title: '履歴の保存を許可しますか？',
+    message:
+      'ブラウザの Cookie / ローカルストレージを使って cURL の実行履歴を保存します。データはお使いのデバイスに留まり、サーバーには送信されません。',
+    accept: '許可する',
+    decline: '拒否する',
+  },
+
+  history: {
+    title: '履歴',
+    empty: '履歴はまだありません',
+    noMatch: '一致する履歴がありません',
+    searchPlaceholder: 'コマンドや URL を検索...',
+    clear: 'すべてクリア',
+    confirmClear: 'すべての履歴をクリアしますか？',
+    cleared: '履歴をクリアしました',
+    remove: '削除',
+    untitled: '(URL なし)',
+    disabledTitle: '履歴は無効です',
+    disabledMsg: 'ローカルストレージを許可すると履歴を保存・閲覧できます。',
+    enabled: '履歴を有効化しました',
+  },
+
+  theme: {
+    title: 'テーマ',
+    light: 'ライト',
+    dark: 'ダーク',
+    auto: 'システム',
+  },
+
+  engine: {
+    title: '実行エンジン',
+    browser: 'ブラウザ',
+    browserHint: 'fetch を直接実行 · サーバー不要 · CORS 制限あり',
+    server: 'ローカルプロキシ',
+    serverHint: 'ローカルの curl を起動 · フル対応 · サーバー必要',
+    corsHint:
+      'リクエストが失敗しました。対象サーバーの CORS ポリシーにより遮断されている可能性が高いです。「ローカルプロキシ」に切り替えると、ローカルの curl 経由でリクエストを送信しブラウザの制約を回避できます。',
+    retryWithServer: 'ローカルプロキシで再試行',
+    unsupportedTitle: '一部のフラグはブラウザではサポートされません',
+  },
+};
+
+export default messages;
