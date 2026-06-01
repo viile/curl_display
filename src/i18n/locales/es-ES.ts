@@ -92,6 +92,11 @@ const messages: Messages = {
       'Solicitud fallida, probablemente bloqueada por la política CORS del servidor de destino. Cambia a «Proxy local» para enviar la solicitud a través de tu curl local y evitar las restricciones del navegador.',
     retryWithServer: 'Reintentar vía proxy local',
     unsupportedTitle: 'Algunas opciones no son compatibles con el navegador',
+    desktop: 'Escritorio',
+    desktopHint: 'Ejecutándose en la app de escritorio · invoca curl del sistema directamente',
+    downloadDesktop: 'Descargar app de escritorio',
+    desktopAppHint:
+      'La app de escritorio invoca directamente tu curl del sistema — sin restricciones de CORS, encabezados ni TLS, sin necesidad de servidor.',
   },
 };
 

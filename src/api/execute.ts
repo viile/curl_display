@@ -1,6 +1,7 @@
 import { parseCurlToFetch } from '../utils/curlToFetch';
+import { IS_TAURI } from '../composables/useRuntime';
 
-export type EngineType = 'browser' | 'server';
+export type EngineType = 'browser' | 'server' | 'desktop';
 
 export interface ResponseHeaderEntry {
   name: string;
@@ -39,8 +40,34 @@ export async function executeCurl(
   command: string,
   engine: EngineType
 ): Promise<ExecuteResult> {
+  if (engine === 'desktop') return executeViaDesktop(command);
   if (engine === 'browser') return executeInBrowser(command);
   return executeViaServer(command);
+}
+
+/* ---------------------------------------------------------------------------
+ * desktop engine：Tauri 桌面壳内调用 Rust 侧 spawn('curl')
+ * ------------------------------------------------------------------------- */
+async function executeViaDesktop(command: string): Promise<ExecuteResult> {
+  if (!IS_TAURI) {
+    return {
+      ...emptyResult(),
+      engine: 'desktop',
+      error: 'Desktop engine only available inside the Tauri app',
+    };
+  }
+  try {
+    const { invoke } = await import('@tauri-apps/api/core');
+    const r = await invoke<ExecuteResult>('execute_curl', { command });
+    return { ...r, engine: 'desktop' };
+  } catch (e: any) {
+    return {
+      ...emptyResult(),
+      engine: 'desktop',
+      error: e?.message || String(e),
+      hint: '请确认本机已安装 curl 命令',
+    };
+  }
 }
 
 /* ---------------------------------------------------------------------------

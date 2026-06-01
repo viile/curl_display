@@ -92,6 +92,11 @@ const messages: Messages = {
       '요청 실패. 대상 서버의 CORS 정책으로 인해 차단되었을 가능성이 높습니다. 「로컬 프록시」로 전환하면 로컬 curl을 통해 요청을 보내 브라우저 제한을 우회할 수 있습니다.',
     retryWithServer: '로컬 프록시로 다시 시도',
     unsupportedTitle: '브라우저에서 지원되지 않는 플래그가 있습니다',
+    desktop: '데스크톱',
+    desktopHint: '데스크톱 앱에서 실행 중 · 시스템 curl 직접 호출',
+    downloadDesktop: '데스크톱 앱 다운로드',
+    desktopAppHint:
+      '데스크톱 버전은 시스템 curl을 직접 호출합니다. CORS, 헤더, TLS 제한 없음. 서버 불필요.',
   },
 };
 

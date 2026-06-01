@@ -92,6 +92,11 @@ const messages: Messages = {
       'Yêu cầu thất bại, có thể bị chặn bởi chính sách CORS của máy chủ đích. Chuyển sang «Proxy nội bộ» để gửi yêu cầu qua curl cục bộ và bỏ qua giới hạn của trình duyệt.',
     retryWithServer: 'Thử lại qua proxy nội bộ',
     unsupportedTitle: 'Một số tham số không được hỗ trợ trong trình duyệt',
+    desktop: 'Ứng dụng máy tính',
+    desktopHint: 'Đang chạy trong ứng dụng máy tính · gọi curl hệ thống trực tiếp',
+    downloadDesktop: 'Tải ứng dụng máy tính',
+    desktopAppHint:
+      'Ứng dụng máy tính gọi trực tiếp curl hệ thống — không bị giới hạn CORS, header hay TLS, không cần server.',
   },
 };
 

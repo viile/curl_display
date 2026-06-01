@@ -92,6 +92,10 @@ const messages: Messages = {
       '請求失敗，多半是目標伺服器的 CORS 策略限制。切換到「本地代理」可由本機 curl 發起請求，繞過瀏覽器限制。',
     retryWithServer: '改用本地代理重試',
     unsupportedTitle: '部分參數瀏覽器不支援',
+    desktop: '桌面應用',
+    desktopHint: '已執行在桌面應用內 · 直接呼叫系統 curl',
+    downloadDesktop: '下載桌面應用',
+    desktopAppHint: '桌面版直接呼叫系統 curl，無 CORS / header / TLS 任何限制，無需啟動 server。',
   },
 };
 

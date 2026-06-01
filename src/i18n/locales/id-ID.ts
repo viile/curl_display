@@ -92,6 +92,11 @@ const messages: Messages = {
       'Permintaan gagal, kemungkinan diblokir oleh kebijakan CORS server target. Beralih ke «Proxy lokal» untuk mengirim permintaan via curl lokal dan melewati pembatasan browser.',
     retryWithServer: 'Coba lagi via proxy lokal',
     unsupportedTitle: 'Beberapa flag tidak didukung di browser',
+    desktop: 'Aplikasi Desktop',
+    desktopHint: 'Berjalan di aplikasi desktop · memanggil curl sistem secara langsung',
+    downloadDesktop: 'Unduh aplikasi desktop',
+    desktopAppHint:
+      'Aplikasi desktop memanggil curl sistem secara langsung — tanpa batasan CORS, header, atau TLS, tanpa perlu server.',
   },
 };
 

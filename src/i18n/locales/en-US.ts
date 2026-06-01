@@ -92,6 +92,11 @@ const messages: Messages = {
       "Request failed, likely blocked by the target server's CORS policy. Switch to the local proxy to dispatch requests through your local curl and bypass browser restrictions.",
     retryWithServer: 'Retry via local proxy',
     unsupportedTitle: 'Some flags are not supported in the browser',
+    desktop: 'Desktop',
+    desktopHint: 'Running inside the desktop app · invokes system curl directly',
+    downloadDesktop: 'Download desktop app',
+    desktopAppHint:
+      'The desktop app invokes your system curl directly — no CORS, no header restrictions, no TLS limits, no server required.',
   },
 };
 

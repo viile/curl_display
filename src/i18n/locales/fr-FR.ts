@@ -92,6 +92,11 @@ const messages: Messages = {
       "Échec de la requête, probablement bloquée par la politique CORS du serveur cible. Basculez sur « Proxy local » pour envoyer la requête via votre curl local et contourner les restrictions du navigateur.",
     retryWithServer: 'Réessayer via le proxy local',
     unsupportedTitle: 'Certaines options ne sont pas prises en charge dans le navigateur',
+    desktop: 'Application bureau',
+    desktopHint: "Exécuté dans l'application bureau · appel direct au curl système",
+    downloadDesktop: "Télécharger l'application bureau",
+    desktopAppHint:
+      "L'application bureau invoque directement le curl système — aucune restriction CORS, en-têtes ou TLS, aucun serveur requis.",
   },
 };
 

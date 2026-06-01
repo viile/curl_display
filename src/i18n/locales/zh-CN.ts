@@ -90,6 +90,10 @@ const messages = {
       '请求失败，多半是目标服务器的 CORS 策略限制。切换到「本地代理」可由本机 curl 发起请求，绕过浏览器限制。',
     retryWithServer: '改用本地代理重试',
     unsupportedTitle: '部分参数浏览器不支持',
+    desktop: '桌面应用',
+    desktopHint: '已运行在桌面应用内 · 直接调用系统 curl',
+    downloadDesktop: '下载桌面应用',
+    desktopAppHint: '桌面版直接调用系统 curl，无 CORS / header / TLS 任何限制，无需启动 server。',
   },
 };
 

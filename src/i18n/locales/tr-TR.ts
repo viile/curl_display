@@ -92,6 +92,11 @@ const messages: Messages = {
       'İstek başarısız oldu, büyük olasılıkla hedef sunucunun CORS politikasıyla engellendi. İsteği yerel curl üzerinden göndermek ve tarayıcı kısıtlamalarını aşmak için «Yerel proxy»ye geçin.',
     retryWithServer: 'Yerel proxy ile yeniden dene',
     unsupportedTitle: 'Bazı bayraklar tarayıcıda desteklenmiyor',
+    desktop: 'Masaüstü',
+    desktopHint: "Masaüstü uygulamasında çalışıyor · sistem curl'unu doğrudan çağırır",
+    downloadDesktop: 'Masaüstü uygulamasını indir',
+    desktopAppHint:
+      "Masaüstü uygulaması sistem curl'unu doğrudan çağırır — CORS, başlık veya TLS kısıtlaması yok, sunucu gerekmez.",
   },
 };
 

@@ -92,6 +92,11 @@ const messages: Messages = {
       'Żądanie nie powiodło się, prawdopodobnie zablokowane przez politykę CORS serwera docelowego. Przełącz na «Lokalny proxy», aby wysłać żądanie przez lokalny curl i ominąć ograniczenia przeglądarki.',
     retryWithServer: 'Spróbuj ponownie przez lokalny proxy',
     unsupportedTitle: 'Niektóre flagi nie są obsługiwane w przeglądarce',
+    desktop: 'Aplikacja desktopowa',
+    desktopHint: 'Działa w aplikacji desktopowej · bezpośrednio wywołuje curl systemowy',
+    downloadDesktop: 'Pobierz aplikację desktopową',
+    desktopAppHint:
+      'Aplikacja desktopowa bezpośrednio wywołuje systemowy curl — bez ograniczeń CORS, nagłówków czy TLS, bez potrzeby serwera.',
   },
 };
 

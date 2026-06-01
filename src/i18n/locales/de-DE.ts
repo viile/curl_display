@@ -92,6 +92,11 @@ const messages: Messages = {
       'Anfrage fehlgeschlagen, wahrscheinlich durch die CORS-Richtlinie des Zielservers blockiert. Wechsle zum „Lokalen Proxy", um die Anfrage über dein lokales curl zu senden und Browser-Einschränkungen zu umgehen.',
     retryWithServer: 'Mit lokalem Proxy erneut versuchen',
     unsupportedTitle: 'Einige Flags werden im Browser nicht unterstützt',
+    desktop: 'Desktop',
+    desktopHint: 'Läuft in der Desktop-App · ruft System-curl direkt auf',
+    downloadDesktop: 'Desktop-App herunterladen',
+    desktopAppHint:
+      'Die Desktop-App ruft dein System-curl direkt auf — keine CORS-, Header- oder TLS-Einschränkungen, kein Server nötig.',
   },
 };
 

@@ -92,6 +92,11 @@ const messages: Messages = {
       'Richiesta fallita, probabilmente bloccata dalla policy CORS del server di destinazione. Passa al «Proxy locale» per inviare la richiesta tramite il tuo curl locale e aggirare le restrizioni del browser.',
     retryWithServer: 'Riprova tramite proxy locale',
     unsupportedTitle: 'Alcune opzioni non sono supportate nel browser',
+    desktop: 'Desktop',
+    desktopHint: "In esecuzione nell'app desktop · invoca direttamente curl di sistema",
+    downloadDesktop: 'Scarica app desktop',
+    desktopAppHint:
+      "L'app desktop invoca direttamente il curl di sistema — nessuna restrizione CORS, header o TLS, nessun server richiesto.",
   },
 };
 

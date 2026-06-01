@@ -92,6 +92,11 @@ const messages: Messages = {
       'Cererea a eșuat, probabil blocată de politica CORS a serverului țintă. Treci la «Proxy local» pentru a trimite cererea prin curl local și a ocoli restricțiile browserului.',
     retryWithServer: 'Reîncearcă prin proxy local',
     unsupportedTitle: 'Unele opțiuni nu sunt acceptate în browser',
+    desktop: 'Desktop',
+    desktopHint: 'Rulează în aplicația desktop · invocă direct curl-ul sistemului',
+    downloadDesktop: 'Descarcă aplicația desktop',
+    desktopAppHint:
+      'Aplicația desktop invocă direct curl-ul sistemului — fără restricții CORS, anteturi sau TLS, fără server.',
   },
 };
 

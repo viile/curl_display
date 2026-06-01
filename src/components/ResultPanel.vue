@@ -2,8 +2,9 @@
 import { computed, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
-import { DocumentCopy, Download, Loading } from '@element-plus/icons-vue';
+import { DocumentCopy, Download, Loading, Monitor } from '@element-plus/icons-vue';
 import type { ExecuteResult } from '../api/execute';
+import { DESKTOP_DOWNLOAD_URL } from '../config/links';
 
 const props = defineProps<{
   result: ExecuteResult | null;
@@ -180,9 +181,21 @@ const headerCount = computed(() =>
           <pre>{{ result.error }}{{ result.hint ? '\n' + result.hint : '' }}</pre>
           <div v-if="result.corsLike && result.engine === 'browser'" class="error-action">
             <div class="cors-hint">{{ t('engine.corsHint') }}</div>
-            <el-button size="small" type="primary" @click="emit('retry-with-server')">
-              {{ t('engine.retryWithServer') }}
-            </el-button>
+            <div class="error-action-buttons">
+              <el-button size="small" type="primary" @click="emit('retry-with-server')">
+                {{ t('engine.retryWithServer') }}
+              </el-button>
+              <a
+                class="download-desktop-btn"
+                :href="DESKTOP_DOWNLOAD_URL"
+                target="_blank"
+                rel="noopener"
+              >
+                <el-icon :size="14"><Monitor /></el-icon>
+                <span>{{ t('engine.downloadDesktop') }}</span>
+              </a>
+            </div>
+            <div class="desktop-hint">{{ t('engine.desktopAppHint') }}</div>
           </div>
         </div>
 
@@ -384,15 +397,46 @@ const headerCount = computed(() =>
 .error-action {
   margin-top: 10px;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
 }
 .cors-hint {
-  flex: 1;
-  min-width: 200px;
   font-size: 12px;
   color: var(--text-dim);
+  line-height: 1.5;
+}
+.error-action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.download-desktop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  line-height: 1;
+}
+.download-desktop-btn:hover {
+  background: var(--hover);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.download-desktop-btn:active {
+  transform: translateY(1px);
+}
+.desktop-hint {
+  font-size: 11px;
+  color: var(--text-faint);
   line-height: 1.5;
 }
 

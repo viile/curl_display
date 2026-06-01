@@ -92,6 +92,11 @@ const messages: Messages = {
       'リクエストが失敗しました。対象サーバーの CORS ポリシーにより遮断されている可能性が高いです。「ローカルプロキシ」に切り替えると、ローカルの curl 経由でリクエストを送信しブラウザの制約を回避できます。',
     retryWithServer: 'ローカルプロキシで再試行',
     unsupportedTitle: '一部のフラグはブラウザではサポートされません',
+    desktop: 'デスクトップ',
+    desktopHint: 'デスクトップアプリで実行中 · システム curl を直接呼び出し',
+    downloadDesktop: 'デスクトップアプリをダウンロード',
+    desktopAppHint:
+      'デスクトップ版はシステムの curl を直接呼び出します。CORS / ヘッダ / TLS の制約なし、サーバー不要。',
   },
 };
 

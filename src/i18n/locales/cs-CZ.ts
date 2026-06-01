@@ -92,6 +92,11 @@ const messages: Messages = {
       'Požadavek selhal, pravděpodobně blokován politikou CORS cílového serveru. Přepněte na «Lokální proxy», abyste požadavek odeslali přes lokální curl a obešli omezení prohlížeče.',
     retryWithServer: 'Zkusit znovu přes lokální proxy',
     unsupportedTitle: 'Některé příznaky nejsou v prohlížeči podporovány',
+    desktop: 'Desktop',
+    desktopHint: 'Běží v desktopové aplikaci · přímo volá systémový curl',
+    downloadDesktop: 'Stáhnout desktopovou aplikaci',
+    desktopAppHint:
+      'Desktopová aplikace přímo volá systémový curl — žádná omezení CORS, hlaviček ani TLS, žádný server není potřeba.',
   },
 };
 
