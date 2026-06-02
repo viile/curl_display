@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Язык',
   },
 
+  meta: {
+    description:
+      'Запускайте, форматируйте и визуализируйте curl-команды локально в браузере. Дерево / интеллект-карта JSON, 20 языков, тёмная тема, десктоп-приложение без ограничений CORS.',
+    keywords:
+      'curl, curl онлайн, инструмент curl, JSON форматтер, JSON дерево, JSON интеллект-карта, HTTP клиент, тестирование API, postman альтернатива, REST клиент',
+  },
+
   editor: {
     run: 'Выполнить',
     running: 'Выполняется',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Скачать',
     emptyBody: '(пустое тело)',
     emptyHeaders: '(нет заголовков)',
+    formatLabel: 'Формат',
+    formatText: 'Текст',
+    formatTree: 'Дерево',
+    formatMind: 'Интеллект-карта',
   },
 
   consent: {

@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Limbă',
   },
 
+  meta: {
+    description:
+      'Rulează, formatează și vizualizează comenzi curl local în browser. Vizualizări arbore / hartă mentală JSON, 20 limbi, mod întunecat și aplicație desktop fără restricții CORS.',
+    keywords:
+      'curl, unealtă curl, curl online, formator JSON, arbore JSON, hartă mentală JSON, client HTTP, testare API, alternativă postman, client REST',
+  },
+
   editor: {
     run: 'Execută',
     running: 'În execuție',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Descarcă',
     emptyBody: '(corp gol)',
     emptyHeaders: '(fără antete)',
+    formatLabel: 'Format',
+    formatText: 'Text',
+    formatTree: 'Arbore',
+    formatMind: 'Hartă mentală',
   },
 
   consent: {

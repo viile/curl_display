@@ -6,6 +6,13 @@ const messages = {
     language: '语言',
   },
 
+  meta: {
+    description:
+      '在浏览器中本地执行、格式化和可视化 curl 命令。支持 JSON 树形 / 脑图视图、20 种语言、暗色主题，并可打包为无 CORS 限制的桌面应用。',
+    keywords:
+      'curl, curl 工具, curl 在线, json 格式化, json 树形, json 脑图, http 客户端, api 测试, postman 替代, REST 客户端, 接口调试',
+  },
+
   editor: {
     run: '执行',
     running: '执行中',
@@ -48,6 +55,10 @@ const messages = {
     actionDownload: '下载',
     emptyBody: '（空响应体）',
     emptyHeaders: '（无响应头）',
+    formatLabel: '格式',
+    formatText: '文本',
+    formatTree: '树形',
+    formatMind: '脑图',
   },
 
   consent: {

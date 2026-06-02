@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, watchEffect } from 'vue';
+import { ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import CurlEditor from './components/CurlEditor.vue';
@@ -11,12 +11,11 @@ import { executeCurl, type ExecuteResult, type EngineType } from './api/execute'
 import { currentElementLocale } from './i18n';
 import { useHistory, type HistoryItem } from './composables/useHistory';
 import { useEngine } from './composables/useEngine';
+import { useSeo } from './composables/useSeo';
 
 const { t } = useI18n();
-
-watchEffect(() => {
-  document.title = `${t('app.title')} · ${t('app.subtitle')}`;
-});
+// 跟随 locale 动态刷新 <title> / <meta description> / OG 等 SEO 标签
+useSeo();
 
 const DEFAULT_CURL = `curl https://httpbin.org/get \\
   -H 'Accept: application/json' \\

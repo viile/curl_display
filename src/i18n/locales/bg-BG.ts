@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Език',
   },
 
+  meta: {
+    description:
+      'Изпълнявайте, форматирайте и визуализирайте curl команди локално в браузъра. Дървовидно / мисловно представяне на JSON, 20 езика, тъмна тема и десктоп приложение без ограничения от CORS.',
+    keywords:
+      'curl, curl инструмент, curl онлайн, JSON форматер, JSON дърво, JSON мисловна карта, HTTP клиент, тестване на API, postman алтернатива, REST клиент',
+  },
+
   editor: {
     run: 'Изпълни',
     running: 'Изпълнение',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Изтегли',
     emptyBody: '(празно тяло)',
     emptyHeaders: '(няма заглавки)',
+    formatLabel: 'Формат',
+    formatText: 'Текст',
+    formatTree: 'Дърво',
+    formatMind: 'Мисловна карта',
   },
 
   consent: {

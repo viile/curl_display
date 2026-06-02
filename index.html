@@ -1,13 +1,162 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en-US">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f5f6fa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+
+    <!-- Primary -->
+    <title>cURL Runner · Run, format and visualize curl commands locally</title>
+    <meta
+      name="description"
+      content="Run, format and visualize curl commands locally in your browser. JSON tree / mind-map views, 20 languages, dark mode, and a desktop build with no CORS limits."
+    />
+    <meta
+      name="keywords"
+      content="curl, curl runner, curl gui, curl online, json viewer, json formatter, json tree, json mind map, http client, api testing, postman alternative, rest client"
+    />
+    <meta name="author" content="viile" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="application-name" content="cURL Runner" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://viile.github.io/curl_display/" />
+
+    <!-- hreflang alternates: one URL per language, encoded via ?lang= -->
+    <link rel="alternate" hreflang="x-default" href="https://viile.github.io/curl_display/" />
+    <link rel="alternate" hreflang="en"    href="https://viile.github.io/curl_display/?lang=en-US" />
+    <link rel="alternate" hreflang="zh-CN" href="https://viile.github.io/curl_display/?lang=zh-CN" />
+    <link rel="alternate" hreflang="zh-TW" href="https://viile.github.io/curl_display/?lang=zh-TW" />
+    <link rel="alternate" hreflang="ja"    href="https://viile.github.io/curl_display/?lang=ja-JP" />
+    <link rel="alternate" hreflang="ko"    href="https://viile.github.io/curl_display/?lang=ko-KR" />
+    <link rel="alternate" hreflang="fr"    href="https://viile.github.io/curl_display/?lang=fr-FR" />
+    <link rel="alternate" hreflang="de"    href="https://viile.github.io/curl_display/?lang=de-DE" />
+    <link rel="alternate" hreflang="es"    href="https://viile.github.io/curl_display/?lang=es-ES" />
+    <link rel="alternate" hreflang="it"    href="https://viile.github.io/curl_display/?lang=it-IT" />
+    <link rel="alternate" hreflang="pt-BR" href="https://viile.github.io/curl_display/?lang=pt-BR" />
+    <link rel="alternate" hreflang="ru"    href="https://viile.github.io/curl_display/?lang=ru-RU" />
+    <link rel="alternate" hreflang="ar"    href="https://viile.github.io/curl_display/?lang=ar-SA" />
+    <link rel="alternate" hreflang="vi"    href="https://viile.github.io/curl_display/?lang=vi-VN" />
+    <link rel="alternate" hreflang="tr"    href="https://viile.github.io/curl_display/?lang=tr-TR" />
+    <link rel="alternate" hreflang="pl"    href="https://viile.github.io/curl_display/?lang=pl-PL" />
+    <link rel="alternate" hreflang="cs"    href="https://viile.github.io/curl_display/?lang=cs-CZ" />
+    <link rel="alternate" hreflang="bg"    href="https://viile.github.io/curl_display/?lang=bg-BG" />
+    <link rel="alternate" hreflang="ro"    href="https://viile.github.io/curl_display/?lang=ro-RO" />
+    <link rel="alternate" hreflang="th"    href="https://viile.github.io/curl_display/?lang=th-TH" />
+    <link rel="alternate" hreflang="id"    href="https://viile.github.io/curl_display/?lang=id-ID" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="cURL Runner" />
+    <meta property="og:title" content="cURL Runner · Run, format and visualize curl commands locally" />
+    <meta property="og:description" content="Run, format and visualize curl commands locally in your browser. JSON tree / mind-map views, 20 languages, dark mode, and a desktop build with no CORS limits." />
+    <meta property="og:url" content="https://viile.github.io/curl_display/" />
+    <meta property="og:image" content="https://viile.github.io/curl_display/og-cover.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Screenshot of cURL Runner showing the editor on the left and JSON response visualization on the right" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:locale:alternate" content="zh_TW" />
+    <meta property="og:locale:alternate" content="ja_JP" />
+    <meta property="og:locale:alternate" content="ko_KR" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:locale:alternate" content="de_DE" />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta property="og:locale:alternate" content="it_IT" />
+    <meta property="og:locale:alternate" content="pt_BR" />
+    <meta property="og:locale:alternate" content="ru_RU" />
+    <meta property="og:locale:alternate" content="ar_SA" />
+    <meta property="og:locale:alternate" content="vi_VN" />
+    <meta property="og:locale:alternate" content="tr_TR" />
+    <meta property="og:locale:alternate" content="pl_PL" />
+    <meta property="og:locale:alternate" content="cs_CZ" />
+    <meta property="og:locale:alternate" content="bg_BG" />
+    <meta property="og:locale:alternate" content="ro_RO" />
+    <meta property="og:locale:alternate" content="th_TH" />
+    <meta property="og:locale:alternate" content="id_ID" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="cURL Runner · Run, format and visualize curl commands locally" />
+    <meta name="twitter:description" content="Run, format and visualize curl commands locally in your browser. JSON tree / mind-map views, 20 languages, dark mode, and a desktop build with no CORS limits." />
+    <meta name="twitter:image" content="https://viile.github.io/curl_display/og-cover.png" />
+
+    <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>🛠️</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cURL Runner</title>
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
+    <link rel="manifest" href="%BASE_URL%site.webmanifest" />
+
+    <!-- Structured data: WebApplication -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "cURL Runner",
+        "alternateName": "curl_display",
+        "description": "Run, format and visualize curl commands locally in your browser. JSON tree / mind-map views, 20 languages, dark mode, and a desktop build with no CORS limits.",
+        "url": "https://viile.github.io/curl_display/",
+        "image": "https://viile.github.io/curl_display/og-cover.png",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "API Testing",
+        "operatingSystem": "Any (web browser); macOS, Windows, Linux (desktop build)",
+        "browserRequirements": "Requires JavaScript and a modern browser (Chrome / Edge / Firefox / Safari)",
+        "softwareVersion": "1.0.0",
+        "inLanguage": [
+          "en", "zh-CN", "zh-TW", "ja", "ko", "fr", "de", "es", "it", "pt-BR",
+          "ru", "ar", "vi", "tr", "pl", "cs", "bg", "ro", "th", "id"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "viile",
+          "url": "https://github.com/viile"
+        },
+        "codeRepository": "https://github.com/viile/curl_display",
+        "featureList": [
+          "Run curl commands directly in browser via fetch",
+          "Optional local Node proxy that spawns native curl (no CORS limits)",
+          "Tauri desktop build that calls system curl directly",
+          "JSON response in three views: highlighted text, collapsible tree, interactive mind map",
+          "Execution history saved locally with full timestamps",
+          "20 UI languages with RTL support",
+          "Light / dark / system theme"
+        ]
+      }
+    </script>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <!-- 静态首屏文本：在 JS / Vue 还没接管前，给爬虫与无 JS 用户一个可读的骨架 -->
+      <noscript>
+        <main style="max-width:780px;margin:60px auto;padding:0 24px;font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;color:#222;">
+          <h1>cURL Runner</h1>
+          <p>
+            A privacy-friendly developer tool that lets you paste, format and run
+            <code>curl</code> commands locally — no data is ever uploaded to a third-party server.
+          </p>
+          <p>
+            JavaScript is required to use this app. The full source is open at
+            <a href="https://github.com/viile/curl_display" rel="noopener">github.com/viile/curl_display</a>,
+            and a desktop build is available with no CORS limitations.
+          </p>
+          <h2>Features</h2>
+          <ul>
+            <li>Three execution engines: in-browser <code>fetch</code>, local Node proxy that spawns the native <code>curl</code> binary, and a Tauri desktop app.</li>
+            <li>JSON response visualization in three switchable views: syntax-highlighted text, collapsible tree, and an interactive mind map.</li>
+            <li>20 UI languages, RTL support, light / dark / system themes.</li>
+            <li>Execution history stored locally in your browser; nothing is sent to a server.</li>
+          </ul>
+        </main>
+      </noscript>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

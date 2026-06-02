@@ -3,7 +3,8 @@ import type { ExecuteResult } from '../api/execute';
 import { useConsent } from './useConsent';
 
 const STORAGE_KEY = 'curl-display:history';
-const MAX_ITEMS = 50;
+/** 上限：每次执行都新增一条，所以上限放宽到 100。超出时按时间倒序裁掉最旧的 */
+const MAX_ITEMS = 100;
 /** 单条结果 body 截断阈值，避免 localStorage 配额爆掉 */
 const BODY_TRUNCATE_BYTES = 100_000;
 
@@ -100,21 +101,17 @@ export function useHistory() {
   if (!loaded) load();
 
   /**
-   * 加入或更新一条历史。完全相同的命令（去空格后）会被合并到顶部。
+   * 追加一条历史。每次调用都新增一条（不去重），允许同一命令在不同时间多次出现。
    */
   function record(command: string, result: ExecuteResult | null) {
     if (consent.value !== 'accepted') return;
-    const norm = command.trim();
-    if (!norm) return;
-    const idx = items.value.findIndex((i) => i.command.trim() === norm);
-    const existing = idx >= 0 ? items.value[idx] : null;
+    if (!command.trim()) return;
     const item: HistoryItem = {
-      id: existing?.id ?? safeUUID(),
+      id: safeUUID(),
       command,
       result: trimBody(result),
       timestamp: Date.now(),
     };
-    if (idx >= 0) items.value.splice(idx, 1);
     items.value.unshift(item);
     if (items.value.length > MAX_ITEMS) {
       items.value = items.value.slice(0, MAX_ITEMS);

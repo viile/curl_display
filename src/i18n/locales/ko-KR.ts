@@ -8,6 +8,13 @@ const messages: Messages = {
     language: '언어',
   },
 
+  meta: {
+    description:
+      '브라우저에서 curl 명령어를 로컬로 실행, 포맷팅, 시각화. JSON 트리 / 마인드맵 보기, 20개 언어, 다크 모드, CORS 제한 없는 데스크톱 앱.',
+    keywords:
+      'curl, curl 도구, curl 온라인, JSON 포매터, JSON 트리, JSON 마인드맵, HTTP 클라이언트, API 테스트, postman 대안, REST 클라이언트',
+  },
+
   editor: {
     run: '실행',
     running: '실행 중',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: '다운로드',
     emptyBody: '(빈 본문)',
     emptyHeaders: '(헤더 없음)',
+    formatLabel: '형식',
+    formatText: '텍스트',
+    formatTree: '트리',
+    formatMind: '마인드맵',
   },
 
   consent: {

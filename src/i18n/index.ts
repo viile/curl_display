@@ -125,7 +125,20 @@ function matchLocale(input: string | undefined | null): LocaleKey | null {
   return byPrimary?.key ?? null;
 }
 
+/** URL ?lang= 优先级最高，便于 SEO（每种语言有独立可分享/收录的 URL） */
+function readUrlLocale(): LocaleKey | null {
+  try {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    return matchLocale(params.get('lang'));
+  } catch {
+    return null;
+  }
+}
+
 function detectInitialLocale(): LocaleKey {
+  const fromUrl = readUrlLocale();
+  if (fromUrl) return fromUrl;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     const matched = matchLocale(saved);
@@ -226,6 +239,22 @@ function applyDocAttrs(key: LocaleKey) {
   }
 }
 
+/**
+ * 切换语言时，同步把 `?lang=` 写入 URL。
+ * 用 replaceState 而不是 pushState：避免在前进/后退里塞一堆语言切换记录。
+ */
+function syncLocaleToUrl(key: LocaleKey) {
+  try {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('lang') === key) return;
+    url.searchParams.set('lang', key);
+    window.history.replaceState(null, '', url.toString());
+  } catch {
+    /* ignore */
+  }
+}
+
 export function setLocale(key: LocaleKey) {
   if (!LOCALE_OPTIONS.some((o) => o.key === key)) return;
   currentLocale.value = key;
@@ -236,6 +265,7 @@ export function setLocale(key: LocaleKey) {
     /* ignore */
   }
   applyDocAttrs(key);
+  syncLocaleToUrl(key);
 }
 
 applyDocAttrs(initial);

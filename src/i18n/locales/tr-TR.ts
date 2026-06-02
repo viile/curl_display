@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Dil',
   },
 
+  meta: {
+    description:
+      "curl komutlarını tarayıcıda yerel olarak çalıştırın, biçimlendirin ve görselleştirin. JSON ağaç / zihin haritası görünümleri, 20 dil, koyu tema, CORS sınırı olmayan masaüstü uygulaması.",
+    keywords:
+      'curl, curl aracı, curl online, JSON biçimlendirici, JSON ağacı, JSON zihin haritası, HTTP istemcisi, API testi, postman alternatifi, REST istemcisi',
+  },
+
   editor: {
     run: 'Çalıştır',
     running: 'Çalışıyor',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'İndir',
     emptyBody: '(boş gövde)',
     emptyHeaders: '(başlık yok)',
+    formatLabel: 'Format',
+    formatText: 'Metin',
+    formatTree: 'Ağaç',
+    formatMind: 'Zihin haritası',
   },
 
   consent: {

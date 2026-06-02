@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'اللغة',
   },
 
+  meta: {
+    description:
+      'نفّذ وأعد تنسيق وعرض أوامر curl محليًا في متصفحك. عرض شجرة / خريطة ذهنية لـ JSON، 20 لغة، الوضع الداكن، وتطبيق سطح مكتب بدون قيود CORS.',
+    keywords:
+      'curl, أداة curl, curl عبر الإنترنت, منسق JSON, شجرة JSON, خريطة ذهنية JSON, عميل HTTP, اختبار API, بديل postman, عميل REST',
+  },
+
   editor: {
     run: 'تشغيل',
     running: 'قيد التشغيل',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'تنزيل',
     emptyBody: '(نص فارغ)',
     emptyHeaders: '(لا توجد ترويسات)',
+    formatLabel: 'التنسيق',
+    formatText: 'نص',
+    formatTree: 'شجرة',
+    formatMind: 'خريطة ذهنية',
   },
 
   consent: {

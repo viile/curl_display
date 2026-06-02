@@ -40,6 +40,16 @@ const filtered = computed(() => {
 
 const normalizedCurrent = computed(() => props.currentCommand.trim());
 
+/**
+ * 同命令多次执行后，列表中可能有多条匹配项；只把最新（最靠前）的一条标记 active，
+ * 否则同命令会全部高亮，反而看不出"现在选中的是哪一条"。
+ */
+const activeId = computed<string | null>(() => {
+  const n = normalizedCurrent.value;
+  if (!n) return null;
+  return items.value.find((i) => i.command.trim() === n)?.id ?? null;
+});
+
 watch(visible, (v) => {
   if (v) {
     nextTick(() => searchInput.value?.focus());
@@ -87,6 +97,54 @@ function timeAgo(ts: number): string {
   } catch {
     return new Date(ts).toLocaleString();
   }
+}
+
+/** 列表里展示的执行时间：当天只显示 HH:mm:ss；非当天显示 MM-DD HH:mm */
+function formatExecTime(ts: number): string {
+  const d = new Date(ts);
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  try {
+    if (sameDay) {
+      return new Intl.DateTimeFormat(currentLocale.value, {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      }).format(d);
+    }
+    return new Intl.DateTimeFormat(currentLocale.value, {
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(d);
+  } catch {
+    return d.toLocaleString();
+  }
+}
+
+/** hover tooltip 用：完整日期时间 + 相对时间 */
+function formatExecTimeFull(ts: number): string {
+  let full: string;
+  try {
+    full = new Intl.DateTimeFormat(currentLocale.value, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).format(new Date(ts));
+  } catch {
+    full = new Date(ts).toLocaleString();
+  }
+  return `${full} · ${timeAgo(ts)}`;
 }
 
 function handlePick(item: HistoryItem) {
@@ -168,7 +226,7 @@ function handleEnableHistory() {
             :key="item.id"
             type="button"
             class="history-item"
-            :class="{ active: item.command.trim() === normalizedCurrent }"
+            :class="{ active: item.id === activeId }"
             @click="handlePick(item)"
           >
             <div class="row-top">
@@ -201,7 +259,13 @@ function handleEnableHistory() {
               </button>
             </div>
             <div class="row-bot">
-              <span class="time">{{ timeAgo(item.timestamp) }}</span>
+              <time
+                class="time"
+                :datetime="new Date(item.timestamp).toISOString()"
+                :title="formatExecTimeFull(item.timestamp)"
+              >
+                {{ formatExecTime(item.timestamp) }}
+              </time>
               <span v-if="item.result?.timeMs != null" class="dot">·</span>
               <span v-if="item.result?.timeMs != null">{{ item.result.timeMs }} ms</span>
             </div>
@@ -337,6 +401,11 @@ function handleEnableHistory() {
   color: var(--text-dim);
   font-size: 11px;
   font-family: var(--mono);
+}
+.row-bot .time {
+  cursor: help;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
 }
 .dot {
   opacity: 0.5;

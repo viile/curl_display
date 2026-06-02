@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Langue',
   },
 
+  meta: {
+    description:
+      'Exécutez, formatez et visualisez des commandes curl localement dans votre navigateur. Vues arbre / carte mentale JSON, 20 langues, mode sombre, version bureau sans limite CORS.',
+    keywords:
+      'curl, outil curl, curl en ligne, formateur JSON, arbre JSON, carte mentale JSON, client HTTP, test API, alternative postman, client REST',
+  },
+
   editor: {
     run: 'Exécuter',
     running: 'Exécution',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Télécharger',
     emptyBody: '(corps vide)',
     emptyHeaders: '(aucun en-tête)',
+    formatLabel: 'Format',
+    formatText: 'Texte',
+    formatTree: 'Arbre',
+    formatMind: 'Carte mentale',
   },
 
   consent: {

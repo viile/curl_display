@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'ภาษา',
   },
 
+  meta: {
+    description:
+      'รัน จัดรูปแบบ และแสดงคำสั่ง curl ในเบราว์เซอร์ของคุณ รองรับมุมมอง JSON แบบต้นไม้ / แผนผังความคิด 20 ภาษา ธีมมืด และแอปเดสก์ท็อปไร้ข้อจำกัด CORS',
+    keywords:
+      'curl, เครื่องมือ curl, curl ออนไลน์, JSON formatter, ต้นไม้ JSON, แผนผังความคิด JSON, HTTP client, ทดสอบ API, ทางเลือก postman, REST client',
+  },
+
   editor: {
     run: 'รัน',
     running: 'กำลังรัน',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'ดาวน์โหลด',
     emptyBody: '(เนื้อหาว่าง)',
     emptyHeaders: '(ไม่มีส่วนหัว)',
+    formatLabel: 'รูปแบบ',
+    formatText: 'ข้อความ',
+    formatTree: 'ต้นไม้',
+    formatMind: 'แผนผังความคิด',
   },
 
   consent: {

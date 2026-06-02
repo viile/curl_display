@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Language',
   },
 
+  meta: {
+    description:
+      'Run, format and visualize curl commands locally in your browser. JSON tree / mind-map views, 20 languages, dark mode, and a desktop build with no CORS limits.',
+    keywords:
+      'curl, curl runner, curl gui, curl online, json viewer, json formatter, json tree, json mind map, http client, api testing, postman alternative, rest client',
+  },
+
   editor: {
     run: 'Run',
     running: 'Running',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Download',
     emptyBody: '(empty body)',
     emptyHeaders: '(no headers)',
+    formatLabel: 'Format',
+    formatText: 'Text',
+    formatTree: 'Tree',
+    formatMind: 'Mind map',
   },
 
   consent: {

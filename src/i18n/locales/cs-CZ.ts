@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Jazyk',
   },
 
+  meta: {
+    description:
+      'Spouštějte, formátujte a vizualizujte curl příkazy lokálně v prohlížeči. Stromový / myšlenkový pohled na JSON, 20 jazyků, tmavý režim a desktopová aplikace bez omezení CORS.',
+    keywords:
+      'curl, curl nástroj, curl online, JSON formátovač, JSON strom, JSON myšlenková mapa, HTTP klient, testování API, postman alternativa, REST klient',
+  },
+
   editor: {
     run: 'Spustit',
     running: 'Probíhá',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Stáhnout',
     emptyBody: '(prázdné tělo)',
     emptyHeaders: '(žádné hlavičky)',
+    formatLabel: 'Formát',
+    formatText: 'Text',
+    formatTree: 'Strom',
+    formatMind: 'Myšlenková mapa',
   },
 
   consent: {

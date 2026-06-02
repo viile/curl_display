@@ -2,9 +2,21 @@
 import { computed, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
-import { DocumentCopy, Download, Loading, Monitor } from '@element-plus/icons-vue';
+import {
+  DocumentCopy,
+  Download,
+  Loading,
+  Monitor,
+  Document,
+  Share,
+  Connection,
+} from '@element-plus/icons-vue';
 import type { ExecuteResult } from '../api/execute';
 import { DESKTOP_DOWNLOAD_URL } from '../config/links';
+import JsonTreeView from './JsonTreeView.vue';
+import JsonMindMap from './JsonMindMap.vue';
+
+type BodyFormat = 'text' | 'tree' | 'mind';
 
 const props = defineProps<{
   result: ExecuteResult | null;
@@ -17,11 +29,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const activeTab = ref<'body' | 'headers' | 'raw'>('body');
+const bodyFormat = ref<BodyFormat>('text');
 
 watch(
   () => props.result,
   () => {
     activeTab.value = 'body';
+    // 每次新结果回到默认格式，避免上一条遗留的视图状态干扰
+    bodyFormat.value = 'text';
   }
 );
 
@@ -120,6 +135,31 @@ const highlightedBody = computed(() => {
   if (!isJson.value) return '';
   return highlightJson(prettyBody.value);
 });
+
+/** 仅 JSON 时尝试解析；解析失败 → null，UI 自动回退到 text 模式 */
+const parsedBody = computed<unknown>(() => {
+  if (!isJson.value) return null;
+  const body = props.result?.body ?? '';
+  if (!body) return null;
+  try {
+    return JSON.parse(body);
+  } catch {
+    return null;
+  }
+});
+
+const canShowStructured = computed(() => parsedBody.value !== null);
+
+interface FormatOption {
+  key: BodyFormat;
+  labelKey: string;
+  icon: typeof Document;
+}
+const FORMAT_OPTIONS: FormatOption[] = [
+  { key: 'text', labelKey: 'result.formatText', icon: Document },
+  { key: 'tree', labelKey: 'result.formatTree', icon: Share },
+  { key: 'mind', labelKey: 'result.formatMind', icon: Connection },
+];
 
 const headerCount = computed(() =>
   (props.result?.headers ?? []).reduce((acc, b) => acc + b.headers.length, 0)
@@ -236,6 +276,26 @@ const headerCount = computed(() =>
         </button>
 
         <div class="tab-actions">
+          <div
+            v-if="activeTab === 'body' && canShowStructured"
+            class="format-switch"
+            role="tablist"
+            :aria-label="t('result.formatLabel')"
+          >
+            <button
+              v-for="opt in FORMAT_OPTIONS"
+              :key="opt.key"
+              type="button"
+              class="format-btn"
+              :class="{ active: bodyFormat === opt.key }"
+              :aria-selected="bodyFormat === opt.key"
+              :title="t(opt.labelKey)"
+              @click="bodyFormat = opt.key"
+            >
+              <el-icon :size="13"><component :is="opt.icon" /></el-icon>
+              <span class="format-btn-text">{{ t(opt.labelKey) }}</span>
+            </button>
+          </div>
           <el-button :icon="DocumentCopy" link @click="copyBody">
             {{ t('result.actionCopy') }}
           </el-button>
@@ -245,9 +305,15 @@ const headerCount = computed(() =>
         </div>
       </div>
 
-      <div class="tab-body">
+      <div class="tab-body" :class="{ 'no-pad': activeTab === 'body' && bodyFormat === 'mind' && canShowStructured }">
         <template v-if="activeTab === 'body'">
           <div v-if="!result.body" class="muted">{{ t('result.emptyBody') }}</div>
+          <template v-else-if="canShowStructured && bodyFormat === 'tree'">
+            <JsonTreeView :data="parsedBody" />
+          </template>
+          <template v-else-if="canShowStructured && bodyFormat === 'mind'">
+            <JsonMindMap :data="parsedBody" />
+          </template>
           <pre v-else-if="isJson" class="code" v-html="highlightedBody" />
           <pre v-else class="code">{{ prettyBody }}</pre>
         </template>
@@ -508,8 +574,44 @@ const headerCount = computed(() =>
 .tab-actions {
   margin-left: auto;
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 8px;
   padding-right: 6px;
+}
+
+.format-switch {
+  display: inline-flex;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.format-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 4px;
+  line-height: 1.4;
+  transition: background 0.12s, color 0.12s;
+}
+.format-btn:hover {
+  color: var(--text);
+}
+.format-btn.active {
+  background: var(--panel-2);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px var(--border-strong);
+}
+.format-btn-text {
+  font-weight: 500;
 }
 
 .tab-body {
@@ -517,6 +619,16 @@ const headerCount = computed(() =>
   overflow: auto;
   padding: 14px 16px;
   background: var(--panel);
+}
+.tab-body.no-pad {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.tab-body.no-pad > * {
+  flex: 1;
+  min-height: 0;
 }
 .muted {
   color: var(--text-dim);

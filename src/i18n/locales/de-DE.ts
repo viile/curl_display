@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Sprache',
   },
 
+  meta: {
+    description:
+      'Führe curl-Befehle lokal im Browser aus, formatiere und visualisiere sie. JSON-Baum-/Mindmap-Ansicht, 20 Sprachen, Dark Mode und eine Desktop-Version ohne CORS-Einschränkungen.',
+    keywords:
+      'curl, curl tool, curl online, JSON Formatter, JSON Baum, JSON Mindmap, HTTP Client, API Testen, postman Alternative, REST Client',
+  },
+
   editor: {
     run: 'Ausführen',
     running: 'Läuft',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Herunterladen',
     emptyBody: '(leerer Inhalt)',
     emptyHeaders: '(keine Header)',
+    formatLabel: 'Format',
+    formatText: 'Text',
+    formatTree: 'Baum',
+    formatMind: 'Mindmap',
   },
 
   consent: {

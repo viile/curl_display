@@ -1,0 +1,8 @@
+# cURL Runner — robots.txt
+# Allow all well-behaved crawlers, point them at the sitemap.
+
+User-agent: *
+Allow: /
+
+# Sitemap location (replace host if you deploy elsewhere)
+Sitemap: https://viile.github.io/curl_display/sitemap.xml

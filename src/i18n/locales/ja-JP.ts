@@ -8,6 +8,13 @@ const messages: Messages = {
     language: '言語',
   },
 
+  meta: {
+    description:
+      'ブラウザで curl コマンドをローカル実行・整形・可視化。JSON ツリー / マインドマップ表示、20 言語対応、ダークモード、CORS 制約のないデスクトップアプリ版あり。',
+    keywords:
+      'curl, curl ツール, curl オンライン, JSON 整形, JSON ツリー, JSON マインドマップ, HTTP クライアント, API テスト, postman 代替, REST クライアント',
+  },
+
   editor: {
     run: '実行',
     running: '実行中',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'ダウンロード',
     emptyBody: '(空のボディ)',
     emptyHeaders: '(ヘッダーなし)',
+    formatLabel: '表示形式',
+    formatText: 'テキスト',
+    formatTree: 'ツリー',
+    formatMind: 'マインドマップ',
   },
 
   consent: {

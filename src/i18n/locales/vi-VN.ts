@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Ngôn ngữ',
   },
 
+  meta: {
+    description:
+      'Chạy, định dạng và trực quan hóa lệnh curl ngay trong trình duyệt. Xem JSON dạng cây / sơ đồ tư duy, 20 ngôn ngữ, chế độ tối, có bản desktop không bị giới hạn CORS.',
+    keywords:
+      'curl, công cụ curl, curl trực tuyến, định dạng JSON, cây JSON, sơ đồ tư duy JSON, HTTP client, kiểm thử API, postman thay thế, REST client',
+  },
+
   editor: {
     run: 'Chạy',
     running: 'Đang chạy',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Tải xuống',
     emptyBody: '(nội dung trống)',
     emptyHeaders: '(không có headers)',
+    formatLabel: 'Định dạng',
+    formatText: 'Văn bản',
+    formatTree: 'Cây',
+    formatMind: 'Sơ đồ tư duy',
   },
 
   consent: {

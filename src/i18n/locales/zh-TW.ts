@@ -8,6 +8,13 @@ const messages: Messages = {
     language: '語言',
   },
 
+  meta: {
+    description:
+      '在瀏覽器中本地執行、格式化並視覺化 curl 命令。支援 JSON 樹狀 / 心智圖檢視、20 種語言、暗色主題，可打包為無 CORS 限制的桌面應用。',
+    keywords:
+      'curl, curl 工具, curl 線上, json 格式化, json 樹狀, json 心智圖, http 客戶端, api 測試, postman 替代, REST 客戶端, 介面除錯',
+  },
+
   editor: {
     run: '執行',
     running: '執行中',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: '下載',
     emptyBody: '（空回應主體）',
     emptyHeaders: '（無回應標頭）',
+    formatLabel: '格式',
+    formatText: '文字',
+    formatTree: '樹形',
+    formatMind: '腦圖',
   },
 
   consent: {

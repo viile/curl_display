@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  cURL Runner sitemap.
+  Each <url> block declares xhtml:link rel="alternate" entries for every
+  supported UI language, so Google can index per-language URLs separately
+  while understanding they're the same resource.
+-->
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
+  <url>
+    <loc>https://viile.github.io/curl_display/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://viile.github.io/curl_display/" />
+    <xhtml:link rel="alternate" hreflang="en"    href="https://viile.github.io/curl_display/?lang=en-US" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://viile.github.io/curl_display/?lang=zh-CN" />
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://viile.github.io/curl_display/?lang=zh-TW" />
+    <xhtml:link rel="alternate" hreflang="ja"    href="https://viile.github.io/curl_display/?lang=ja-JP" />
+    <xhtml:link rel="alternate" hreflang="ko"    href="https://viile.github.io/curl_display/?lang=ko-KR" />
+    <xhtml:link rel="alternate" hreflang="fr"    href="https://viile.github.io/curl_display/?lang=fr-FR" />
+    <xhtml:link rel="alternate" hreflang="de"    href="https://viile.github.io/curl_display/?lang=de-DE" />
+    <xhtml:link rel="alternate" hreflang="es"    href="https://viile.github.io/curl_display/?lang=es-ES" />
+    <xhtml:link rel="alternate" hreflang="it"    href="https://viile.github.io/curl_display/?lang=it-IT" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viile.github.io/curl_display/?lang=pt-BR" />
+    <xhtml:link rel="alternate" hreflang="ru"    href="https://viile.github.io/curl_display/?lang=ru-RU" />
+    <xhtml:link rel="alternate" hreflang="ar"    href="https://viile.github.io/curl_display/?lang=ar-SA" />
+    <xhtml:link rel="alternate" hreflang="vi"    href="https://viile.github.io/curl_display/?lang=vi-VN" />
+    <xhtml:link rel="alternate" hreflang="tr"    href="https://viile.github.io/curl_display/?lang=tr-TR" />
+    <xhtml:link rel="alternate" hreflang="pl"    href="https://viile.github.io/curl_display/?lang=pl-PL" />
+    <xhtml:link rel="alternate" hreflang="cs"    href="https://viile.github.io/curl_display/?lang=cs-CZ" />
+    <xhtml:link rel="alternate" hreflang="bg"    href="https://viile.github.io/curl_display/?lang=bg-BG" />
+    <xhtml:link rel="alternate" hreflang="ro"    href="https://viile.github.io/curl_display/?lang=ro-RO" />
+    <xhtml:link rel="alternate" hreflang="th"    href="https://viile.github.io/curl_display/?lang=th-TH" />
+    <xhtml:link rel="alternate" hreflang="id"    href="https://viile.github.io/curl_display/?lang=id-ID" />
+  </url>
+</urlset>

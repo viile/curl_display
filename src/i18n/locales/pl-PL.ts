@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Język',
   },
 
+  meta: {
+    description:
+      'Uruchamiaj, formatuj i wizualizuj polecenia curl lokalnie w przeglądarce. Widok drzewa / mapy myśli JSON, 20 języków, ciemny motyw i aplikacja desktopowa bez ograniczeń CORS.',
+    keywords:
+      'curl, narzędzie curl, curl online, formatter JSON, drzewo JSON, mapa myśli JSON, klient HTTP, testowanie API, alternatywa postman, klient REST',
+  },
+
   editor: {
     run: 'Uruchom',
     running: 'Uruchamianie',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Pobierz',
     emptyBody: '(pusta treść)',
     emptyHeaders: '(brak nagłówków)',
+    formatLabel: 'Format',
+    formatText: 'Tekst',
+    formatTree: 'Drzewo',
+    formatMind: 'Mapa myśli',
   },
 
   consent: {

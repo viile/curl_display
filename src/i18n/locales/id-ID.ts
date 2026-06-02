@@ -8,6 +8,13 @@ const messages: Messages = {
     language: 'Bahasa',
   },
 
+  meta: {
+    description:
+      'Jalankan, format, dan visualisasikan perintah curl secara lokal di browser. Tampilan JSON pohon / peta pikiran, 20 bahasa, mode gelap, dan aplikasi desktop tanpa batasan CORS.',
+    keywords:
+      'curl, alat curl, curl online, formatter JSON, pohon JSON, peta pikiran JSON, klien HTTP, pengujian API, alternatif postman, klien REST',
+  },
+
   editor: {
     run: 'Jalankan',
     running: 'Berjalan',
@@ -50,6 +57,10 @@ const messages: Messages = {
     actionDownload: 'Unduh',
     emptyBody: '(body kosong)',
     emptyHeaders: '(tidak ada headers)',
+    formatLabel: 'Format',
+    formatText: 'Teks',
+    formatTree: 'Pohon',
+    formatMind: 'Peta pikiran',
   },
 
   consent: {
