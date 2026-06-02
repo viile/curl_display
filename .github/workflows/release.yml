@@ -42,11 +42,14 @@ jobs:
 
       - name: Install Linux build deps
         if: runner.os == 'Linux'
+        # Tauri 2 在 Ubuntu 22.04+ 上只用 libayatana-appindicator3-dev。
+        # 不要再带 libappindicator3-dev（已弃用 + 与 ayatana 版 Conflicts，
+        # 同时装会触发 "held broken packages"）。
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
+            libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf \
             build-essential \
@@ -54,8 +57,7 @@ jobs:
             wget \
             file \
             libssl-dev \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev
+            libgtk-3-dev
 
       - uses: actions/setup-node@v4
         with:
@@ -108,15 +110,17 @@ jobs:
           prerelease: false
           fail_on_unmatched_files: false
           body: |
-            桌面版本下载（请选择匹配你系统的安装包）：
+            Desktop builds — pick the installer for your system:
 
-            | 平台 | 文件 |
+            | Platform | File |
             |---|---|
-            | macOS Apple Silicon (M1/M2/M3) | `*_aarch64.dmg` |
+            | macOS Apple Silicon (M1/M2/M3/M4) | `*_aarch64.dmg` |
             | macOS Intel | `*_x64.dmg` |
-            | Windows 10/11 | `*_x64-setup.exe` 或 `*_x64_en-US.msi` |
+            | Windows 10/11 | `*_x64-setup.exe` or `*_x64_en-US.msi` |
             | Linux (Ubuntu/Debian) | `*.deb` |
-            | Linux (通用) | `*.AppImage` |
+            | Linux (generic) | `*.AppImage` |
 
-            首次打开 macOS / Windows 可能被系统拦截，按平台说明放行即可。
+            macOS / Windows may block the first launch — follow the platform-specific
+            instructions in the [README](https://github.com/viile/curl_runner#first-run-notes)
+            to allow it.
           files: ${{ steps.stage.outputs.list }}
