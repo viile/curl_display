@@ -2,7 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Clock, Delete, Search, Close } from '@element-plus/icons-vue';
+import { Clock, Delete, Search, Close, Star, StarFilled } from '@element-plus/icons-vue';
 import { useHistory, type HistoryItem } from '../composables/useHistory';
 import { useConsent } from '../composables/useConsent';
 import { extractCurlSummary } from '../utils/curl';
@@ -18,7 +18,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const { items, count, remove, clear } = useHistory();
+const { items, count, favoriteCount, remove, toggleFavorite, clear } = useHistory();
 const { isAccepted, accept } = useConsent();
 
 const visible = ref(false);
@@ -27,15 +27,21 @@ const searchInput = ref<HTMLInputElement | null>(null);
 
 const filtered = computed(() => {
   const q = keyword.value.trim().toLowerCase();
-  if (!q) return items.value;
-  return items.value.filter((it) => {
-    const s = extractCurlSummary(it.command);
-    return (
-      it.command.toLowerCase().includes(q) ||
-      s.url.toLowerCase().includes(q) ||
-      s.method.toLowerCase().includes(q)
-    );
-  });
+  const base = q
+    ? items.value.filter((it) => {
+        const s = extractCurlSummary(it.command);
+        return (
+          it.command.toLowerCase().includes(q) ||
+          s.url.toLowerCase().includes(q) ||
+          s.method.toLowerCase().includes(q)
+        );
+      })
+    : items.value;
+  // 收藏置顶；组内保持原顺序（items.value 本身已是 timestamp 倒序），
+  // 用稳定的 Array#sort 即可。Node/V8 >= ES2019 都保证 sort 稳定。
+  return [...base].sort(
+    (a, b) => Number(!!b.favorite) - Number(!!a.favorite)
+  );
 });
 
 const normalizedCurrent = computed(() => props.currentCommand.trim());
@@ -157,9 +163,17 @@ function handleRemove(item: HistoryItem, e: Event) {
   remove(item.id);
 }
 
+function handleToggleFavorite(item: HistoryItem, e: Event) {
+  e.stopPropagation();
+  toggleFavorite(item.id);
+}
+
 async function handleClearAll() {
+  const message = favoriteCount.value
+    ? t('history.confirmClearKeepFav', { count: favoriteCount.value })
+    : t('history.confirmClear');
   try {
-    await ElMessageBox.confirm(t('history.confirmClear'), t('history.clear'), {
+    await ElMessageBox.confirm(message, t('history.clear'), {
       type: 'warning',
       confirmButtonText: t('history.clear'),
       cancelButtonText: t('consent.decline'),
@@ -226,7 +240,7 @@ function handleEnableHistory() {
             :key="item.id"
             type="button"
             class="history-item"
-            :class="{ active: item.id === activeId }"
+            :class="{ active: item.id === activeId, 'is-fav': item.favorite }"
             @click="handlePick(item)"
           >
             <div class="row-top">
@@ -251,6 +265,20 @@ function handleEnableHistory() {
               </span>
               <button
                 type="button"
+                class="fav-btn"
+                :class="{ 'is-fav': item.favorite }"
+                :title="item.favorite ? t('history.unfavorite') : t('history.favorite')"
+                :aria-label="item.favorite ? t('history.unfavorite') : t('history.favorite')"
+                :aria-pressed="!!item.favorite"
+                @click="handleToggleFavorite(item, $event)"
+              >
+                <el-icon>
+                  <StarFilled v-if="item.favorite" />
+                  <Star v-else />
+                </el-icon>
+              </button>
+              <button
+                type="button"
                 class="del-btn"
                 :title="t('history.remove')"
                 @click="handleRemove(item, $event)"
@@ -273,12 +301,19 @@ function handleEnableHistory() {
         </div>
 
         <div v-if="items.length" class="history-footer">
-          <span class="muted">{{ filtered.length }} / {{ items.length }}</span>
+          <span class="muted">
+            {{ filtered.length }} / {{ items.length }}
+            <span v-if="favoriteCount" class="fav-count">
+              <el-icon><StarFilled /></el-icon>
+              {{ favoriteCount }}
+            </span>
+          </span>
           <el-button
             link
             type="danger"
             :icon="Delete"
             size="small"
+            :disabled="items.length === favoriteCount"
             @click="handleClearAll"
           >
             {{ t('history.clear') }}
@@ -367,6 +402,7 @@ function handleEnableHistory() {
 }
 
 .history-item {
+  position: relative;
   display: block;
   width: 100%;
   background: transparent;
@@ -385,6 +421,16 @@ function handleEnableHistory() {
 .history-item.active {
   background: var(--active);
   border-color: var(--active-border);
+}
+.history-item.is-fav::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, #f5b94a, #e69a1a);
 }
 
 .row-top {
@@ -479,20 +525,45 @@ function handleEnableHistory() {
   white-space: nowrap;
 }
 
+.fav-btn,
 .del-btn {
   width: 22px;
   height: 22px;
   background: transparent;
   border: none;
-  color: var(--text-dim);
   cursor: pointer;
   border-radius: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 0;
+  transition: opacity 0.12s, color 0.12s, background 0.12s, transform 0.06s;
+}
+
+.fav-btn {
+  color: var(--text-mute);
+  opacity: 0.45;
+  font-size: 14px;
+}
+.history-item:hover .fav-btn {
+  opacity: 0.9;
+}
+.fav-btn.is-fav {
+  color: #f5b94a;
+  opacity: 1;
+}
+.fav-btn:hover {
+  color: #f5b94a;
+  background: rgba(245, 185, 74, 0.16);
+}
+.fav-btn:active {
+  transform: scale(0.92);
+}
+
+.del-btn {
+  color: var(--text-dim);
   opacity: 0;
-  transition: opacity 0.12s, color 0.12s, background 0.12s;
 }
 .history-item:hover .del-btn {
   opacity: 1;
@@ -511,9 +582,23 @@ function handleEnableHistory() {
   border-top: 1px solid var(--border);
 }
 .muted {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--text-dim);
   font-size: 11px;
   font-family: var(--mono);
+}
+.fav-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #f5b94a;
+  padding-left: 4px;
+  border-left: 1px solid var(--border);
+}
+.fav-count .el-icon {
+  font-size: 11px;
 }
 </style>
 

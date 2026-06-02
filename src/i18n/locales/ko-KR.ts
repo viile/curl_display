@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: '텍스트',
     formatTree: '트리',
     formatMind: '마인드맵',
+    searchPlaceholder: 'JSON 검색…',
+    searchEmpty: '일치 항목 없음',
+    searchPrev: '이전 일치',
+    searchNext: '다음 일치',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: '기록이 비활성화됨',
     disabledMsg: '로컬 저장소를 허용하면 실행 기록을 저장하고 볼 수 있습니다.',
     enabled: '기록이 활성화됨',
+    favorite: '즐겨찾기 추가',
+    unfavorite: '즐겨찾기 해제',
+    confirmClearKeepFav:
+      '즐겨찾기가 아닌 모든 기록을 삭제할까요? 즐겨찾기 {count}개는 유지됩니다.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: '데스크톱 앱 다운로드',
     desktopAppHint:
       '데스크톱 버전은 시스템 curl을 직접 호출합니다. CORS, 헤더, TLS 제한 없음. 서버 불필요.',
+  },
+
+  share: {
+    button: '공유',
+    title: '다운로드 링크 공유',
+    subtitle: '데스크톱 앱 링크를 친구나 휴대폰으로 보내세요',
+    copy: '링크 복사',
+    copied: '링크가 클립보드에 복사되었습니다',
+    qrHint: '모바일에서 스캔하여 다운로드',
+    openLink: '다운로드 페이지 열기',
+    nativeShare: '앱으로 공유…',
   },
 };
 

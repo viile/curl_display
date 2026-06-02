@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Text',
     formatTree: 'Baum',
     formatMind: 'Mindmap',
+    searchPlaceholder: 'In JSON suchen…',
+    searchEmpty: 'Keine Treffer',
+    searchPrev: 'Vorheriger Treffer',
+    searchNext: 'Nächster Treffer',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Verlauf deaktiviert',
     disabledMsg: 'Akzeptiere lokalen Speicher, um deinen Verlauf zu speichern und anzusehen.',
     enabled: 'Verlauf aktiviert',
+    favorite: 'Zu Favoriten hinzufügen',
+    unfavorite: 'Aus Favoriten entfernen',
+    confirmClearKeepFav:
+      'Gesamten nicht favorisierten Verlauf löschen? {count} Favoriten bleiben erhalten.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Desktop-App herunterladen',
     desktopAppHint:
       'Die Desktop-App ruft dein System-curl direkt auf — keine CORS-, Header- oder TLS-Einschränkungen, kein Server nötig.',
+  },
+
+  share: {
+    button: 'Teilen',
+    title: 'Download-Link teilen',
+    subtitle: 'Sende den Desktop-App-Link an Freunde oder dein Handy',
+    copy: 'Link kopieren',
+    copied: 'Link in die Zwischenablage kopiert',
+    qrHint: 'Mit dem Handy scannen zum Herunterladen',
+    openLink: 'Download-Seite öffnen',
+    nativeShare: 'Teilen über…',
   },
 };
 

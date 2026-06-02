@@ -13,7 +13,11 @@
 export const SITE_URL = 'https://viile.github.io/curl_display';
 export const SITE_NAME = 'cURL Runner';
 export const SITE_SLOGAN = 'Run, format and visualize curl commands locally';
-export const REPO_URL = 'https://github.com/viile/curl_display';
+/**
+ * 对外公开的代码仓库 URL。源码仓库（viile/curl_display）是私有的，
+ * 这里只暴露承载 Release 与 README 的公开 repo，避免外部用户点进去 404。
+ */
+export const REPO_URL = 'https://github.com/viile/curl_runner';
 export const AUTHOR = 'viile';
 
 /** Open Graph 默认图（1200x630 推荐）。可以是相对 path，会拼接到 SITE_URL 前。 */

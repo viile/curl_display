@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Текст',
     formatTree: 'Дърво',
     formatMind: 'Мисловна карта',
+    searchPlaceholder: 'Търсене в JSON…',
+    searchEmpty: 'Няма съвпадения',
+    searchPrev: 'Предишно съвпадение',
+    searchNext: 'Следващо съвпадение',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Историята е изключена',
     disabledMsg: 'Приемете локалното хранилище, за да запазвате и преглеждате историята.',
     enabled: 'Историята е активирана',
+    favorite: 'Добави в любими',
+    unfavorite: 'Премахни от любими',
+    confirmClearKeepFav:
+      'Изчистване на цялата нелюбима история? {count} любими записа ще бъдат запазени.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Изтегли десктоп приложение',
     desktopAppHint:
       'Десктоп приложението директно извиква системния curl — без CORS, header или TLS ограничения, без сървър.',
+  },
+
+  share: {
+    button: 'Сподели',
+    title: 'Споделяне на връзка за изтегляне',
+    subtitle: 'Изпрати връзката към приложението за десктоп на приятели или на телефона си',
+    copy: 'Копирай връзката',
+    copied: 'Връзката е копирана в клипборда',
+    qrHint: 'Сканирай, за да изтеглиш на мобилно устройство',
+    openLink: 'Отвори страницата за изтегляне',
+    nativeShare: 'Сподели чрез…',
   },
 };
 

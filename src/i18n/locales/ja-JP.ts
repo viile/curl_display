@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'テキスト',
     formatTree: 'ツリー',
     formatMind: 'マインドマップ',
+    searchPlaceholder: 'JSON を検索…',
+    searchEmpty: '一致なし',
+    searchPrev: '前の一致',
+    searchNext: '次の一致',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: '履歴は無効です',
     disabledMsg: 'ローカルストレージを許可すると履歴を保存・閲覧できます。',
     enabled: '履歴を有効化しました',
+    favorite: 'お気に入りに追加',
+    unfavorite: 'お気に入りから削除',
+    confirmClearKeepFav:
+      'お気に入り以外をすべて削除しますか？{count} 件のお気に入りは保持されます。',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'デスクトップアプリをダウンロード',
     desktopAppHint:
       'デスクトップ版はシステムの curl を直接呼び出します。CORS / ヘッダ / TLS の制約なし、サーバー不要。',
+  },
+
+  share: {
+    button: '共有',
+    title: 'ダウンロードリンクを共有',
+    subtitle: 'デスクトップ版のリンクを友人やご自身のスマホへ',
+    copy: 'リンクをコピー',
+    copied: 'リンクをコピーしました',
+    qrHint: 'スキャンしてモバイルでダウンロード',
+    openLink: 'ダウンロードページを開く',
+    nativeShare: 'アプリで共有…',
   },
 };
 

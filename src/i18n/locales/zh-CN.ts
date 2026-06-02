@@ -59,6 +59,10 @@ const messages = {
     formatText: '文本',
     formatTree: '树形',
     formatMind: '脑图',
+    searchPlaceholder: '在 JSON 中搜索…',
+    searchEmpty: '无匹配项',
+    searchPrev: '上一个匹配',
+    searchNext: '下一个匹配',
   },
 
   consent: {
@@ -82,6 +86,9 @@ const messages = {
     disabledTitle: '历史记录未启用',
     disabledMsg: '同意使用本地存储后即可保存并查看执行历史。',
     enabled: '历史记录已启用',
+    favorite: '收藏',
+    unfavorite: '取消收藏',
+    confirmClearKeepFav: '清空所有非收藏历史？{count} 条收藏项将保留。',
   },
 
   theme: {
@@ -105,6 +112,17 @@ const messages = {
     desktopHint: '已运行在桌面应用内 · 直接调用系统 curl',
     downloadDesktop: '下载桌面应用',
     desktopAppHint: '桌面版直接调用系统 curl，无 CORS / header / TLS 任何限制，无需启动 server。',
+  },
+
+  share: {
+    button: '分享',
+    title: '分享下载链接',
+    subtitle: '把桌面版链接发给朋友或自己的手机',
+    copy: '复制链接',
+    copied: '链接已复制',
+    qrHint: '手机扫码下载',
+    openLink: '打开下载页',
+    nativeShare: '通过应用分享…',
   },
 };
 

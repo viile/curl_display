@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Văn bản',
     formatTree: 'Cây',
     formatMind: 'Sơ đồ tư duy',
+    searchPlaceholder: 'Tìm trong JSON…',
+    searchEmpty: 'Không có kết quả',
+    searchPrev: 'Kết quả trước',
+    searchNext: 'Kết quả tiếp theo',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Lịch sử đang tắt',
     disabledMsg: 'Đồng ý sử dụng lưu trữ cục bộ để lưu và xem lịch sử.',
     enabled: 'Đã bật lịch sử',
+    favorite: 'Thêm vào yêu thích',
+    unfavorite: 'Bỏ yêu thích',
+    confirmClearKeepFav:
+      'Xóa toàn bộ lịch sử chưa yêu thích? {count} mục yêu thích sẽ được giữ lại.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Tải ứng dụng máy tính',
     desktopAppHint:
       'Ứng dụng máy tính gọi trực tiếp curl hệ thống — không bị giới hạn CORS, header hay TLS, không cần server.',
+  },
+
+  share: {
+    button: 'Chia sẻ',
+    title: 'Chia sẻ liên kết tải về',
+    subtitle: 'Gửi liên kết bản desktop cho bạn bè hoặc điện thoại của bạn',
+    copy: 'Sao chép liên kết',
+    copied: 'Đã sao chép liên kết vào clipboard',
+    qrHint: 'Quét mã để tải về trên điện thoại',
+    openLink: 'Mở trang tải xuống',
+    nativeShare: 'Chia sẻ qua…',
   },
 };
 

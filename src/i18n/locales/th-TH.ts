@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'ข้อความ',
     formatTree: 'ต้นไม้',
     formatMind: 'แผนผังความคิด',
+    searchPlaceholder: 'ค้นหาใน JSON…',
+    searchEmpty: 'ไม่พบรายการ',
+    searchPrev: 'รายการก่อนหน้า',
+    searchNext: 'รายการถัดไป',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'ประวัติถูกปิดใช้งาน',
     disabledMsg: 'ยอมรับการจัดเก็บภายในเครื่องเพื่อบันทึกและดูประวัติ',
     enabled: 'เปิดใช้งานประวัติแล้ว',
+    favorite: 'เพิ่มในรายการโปรด',
+    unfavorite: 'นำออกจากรายการโปรด',
+    confirmClearKeepFav:
+      'ล้างประวัติที่ไม่ใช่รายการโปรดทั้งหมด? รายการโปรด {count} รายการจะคงไว้',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'ดาวน์โหลดแอปเดสก์ท็อป',
     desktopAppHint:
       'แอปเดสก์ท็อปเรียกใช้ curl ในระบบโดยตรง — ไม่มีข้อจำกัด CORS, header หรือ TLS, ไม่ต้องใช้เซิร์ฟเวอร์',
+  },
+
+  share: {
+    button: 'แชร์',
+    title: 'แชร์ลิงก์ดาวน์โหลด',
+    subtitle: 'ส่งลิงก์แอปเดสก์ท็อปให้เพื่อนหรือมือถือของคุณ',
+    copy: 'คัดลอกลิงก์',
+    copied: 'คัดลอกลิงก์ไปยังคลิปบอร์ดแล้ว',
+    qrHint: 'สแกนเพื่อดาวน์โหลดบนมือถือ',
+    openLink: 'เปิดหน้าดาวน์โหลด',
+    nativeShare: 'แชร์ผ่าน…',
   },
 };
 

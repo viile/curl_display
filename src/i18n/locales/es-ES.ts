@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Texto',
     formatTree: 'Árbol',
     formatMind: 'Mapa mental',
+    searchPlaceholder: 'Buscar en el JSON…',
+    searchEmpty: 'Sin coincidencias',
+    searchPrev: 'Coincidencia anterior',
+    searchNext: 'Coincidencia siguiente',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Historial deshabilitado',
     disabledMsg: 'Acepta el almacenamiento local para guardar y ver tu historial.',
     enabled: 'Historial habilitado',
+    favorite: 'Añadir a favoritos',
+    unfavorite: 'Quitar de favoritos',
+    confirmClearKeepFav:
+      '¿Borrar todo el historial no favorito? Se conservarán {count} favoritos.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Descargar app de escritorio',
     desktopAppHint:
       'La app de escritorio invoca directamente tu curl del sistema — sin restricciones de CORS, encabezados ni TLS, sin necesidad de servidor.',
+  },
+
+  share: {
+    button: 'Compartir',
+    title: 'Compartir enlace de descarga',
+    subtitle: 'Envía el enlace de la app de escritorio a tus amigos o a tu móvil',
+    copy: 'Copiar enlace',
+    copied: 'Enlace copiado al portapapeles',
+    qrHint: 'Escanea para descargar en el móvil',
+    openLink: 'Abrir página de descarga',
+    nativeShare: 'Compartir mediante…',
   },
 };
 

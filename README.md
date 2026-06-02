@@ -24,7 +24,7 @@
 1. **改用本地代理重试** —— 切到 server engine
 2. **下载桌面应用** —— 跳转到 GitHub Releases 下载 .dmg/.exe/.AppImage
 
-下载链接配置在 [`src/config/links.ts`](src/config/links.ts) 中的 `DESKTOP_DOWNLOAD_URL`，fork 后改成自己的 release 地址。
+下载链接配置在 [`src/config/links.ts`](src/config/links.ts) 中的 `DESKTOP_DOWNLOAD_URL`，默认指向**公开发布仓库** [`viile/curl_runner`](https://github.com/viile/curl_runner)（本仓库源码私有，对外只暴露 Release）。fork 后改成自己的 release 地址即可。
 
 ## 功能
 
@@ -106,14 +106,18 @@ npm run tauri:build
 
 ### 自动跨平台发布（推荐）
 
-仓库内置 `.github/workflows/release.yml`，推一个 `v*` 标签即可在 GitHub Actions 上同时构建 **macOS (arm64/x64) / Windows / Linux** 四个产物，自动创建 Release 草稿。
+仓库内置 `.github/workflows/release.yml`，推一个 `v*` 标签即可在 GitHub Actions 上同时构建 **macOS (arm64/x64) / Windows / Linux** 四个产物。
+
+**特别说明：跨仓库发布**
+
+本源码仓库是私有的，对外用户访问会 404，所以 workflow 会用一个名为 `RELEASE_REPO_TOKEN` 的 PAT（fine-grained，仅 `viile/curl_runner` 的 Contents: write）把产物推到**公开仓库** [`viile/curl_runner`](https://github.com/viile/curl_runner) 的 Releases 草稿里。Release 创建为 `draft: true`，等四个平台都跑完后到公开 repo 手动点 Publish。详细配置步骤见仓库根目录 [`PUBLIC_REPO_README.md`](PUBLIC_REPO_README.md) 顶部注释。
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-在 GitHub Releases 页面发布草稿即可。`DESKTOP_DOWNLOAD_URL` 默认指向 `releases/latest`，无需改动。
+`DESKTOP_DOWNLOAD_URL` 已经指向 `viile/curl_runner/releases/latest`，发布后无需改动。
 
 ## 前置条件
 

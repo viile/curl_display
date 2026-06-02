@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Testo',
     formatTree: 'Albero',
     formatMind: 'Mappa mentale',
+    searchPlaceholder: 'Cerca nel JSON…',
+    searchEmpty: 'Nessuna corrispondenza',
+    searchPrev: 'Corrispondenza precedente',
+    searchNext: 'Corrispondenza successiva',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Cronologia disabilitata',
     disabledMsg: 'Accetta l\'archiviazione locale per salvare e visualizzare la cronologia.',
     enabled: 'Cronologia abilitata',
+    favorite: 'Aggiungi ai preferiti',
+    unfavorite: 'Rimuovi dai preferiti',
+    confirmClearKeepFav:
+      'Cancellare tutta la cronologia non preferita? {count} preferiti saranno conservati.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Scarica app desktop',
     desktopAppHint:
       "L'app desktop invoca direttamente il curl di sistema — nessuna restrizione CORS, header o TLS, nessun server richiesto.",
+  },
+
+  share: {
+    button: 'Condividi',
+    title: 'Condividi link di download',
+    subtitle: "Invia il link dell'app desktop ad amici o al tuo telefono",
+    copy: 'Copia link',
+    copied: 'Link copiato negli appunti',
+    qrHint: 'Scansiona per scaricare sul cellulare',
+    openLink: 'Apri pagina di download',
+    nativeShare: 'Condividi tramite…',
   },
 };
 

@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Tekst',
     formatTree: 'Drzewo',
     formatMind: 'Mapa myśli',
+    searchPlaceholder: 'Szukaj w JSON…',
+    searchEmpty: 'Brak dopasowań',
+    searchPrev: 'Poprzednie dopasowanie',
+    searchNext: 'Następne dopasowanie',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Historia wyłączona',
     disabledMsg: 'Zaakceptuj pamięć lokalną, aby zapisywać i przeglądać historię.',
     enabled: 'Historia włączona',
+    favorite: 'Dodaj do ulubionych',
+    unfavorite: 'Usuń z ulubionych',
+    confirmClearKeepFav:
+      'Wyczyścić całą historię oprócz ulubionych? {count} ulubionych zostanie zachowanych.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Pobierz aplikację desktopową',
     desktopAppHint:
       'Aplikacja desktopowa bezpośrednio wywołuje systemowy curl — bez ograniczeń CORS, nagłówków czy TLS, bez potrzeby serwera.',
+  },
+
+  share: {
+    button: 'Udostępnij',
+    title: 'Udostępnij link do pobrania',
+    subtitle: 'Wyślij link do aplikacji desktopowej znajomym lub na swój telefon',
+    copy: 'Kopiuj link',
+    copied: 'Link skopiowany do schowka',
+    qrHint: 'Zeskanuj, aby pobrać na telefon',
+    openLink: 'Otwórz stronę pobierania',
+    nativeShare: 'Udostępnij przez…',
   },
 };
 

@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'نص',
     formatTree: 'شجرة',
     formatMind: 'خريطة ذهنية',
+    searchPlaceholder: 'البحث في JSON…',
+    searchEmpty: 'لا توجد نتائج',
+    searchPrev: 'النتيجة السابقة',
+    searchNext: 'النتيجة التالية',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'السجل معطّل',
     disabledMsg: 'وافق على التخزين المحلي لحفظ ومراجعة السجل.',
     enabled: 'تم تفعيل السجل',
+    favorite: 'إضافة إلى المفضلة',
+    unfavorite: 'إزالة من المفضلة',
+    confirmClearKeepFav:
+      'مسح كل السجل غير المفضل؟ سيتم الاحتفاظ بـ {count} عنصرًا مفضلًا.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'تحميل تطبيق سطح المكتب',
     desktopAppHint:
       'يستدعي تطبيق سطح المكتب curl المحلي مباشرة — بدون قيود CORS أو رؤوس أو TLS، وبدون خادم.',
+  },
+
+  share: {
+    button: 'مشاركة',
+    title: 'مشاركة رابط التنزيل',
+    subtitle: 'أرسل رابط تطبيق سطح المكتب لأصدقائك أو لهاتفك',
+    copy: 'نسخ الرابط',
+    copied: 'تم نسخ الرابط إلى الحافظة',
+    qrHint: 'امسح ضوئيًا للتنزيل على الجوال',
+    openLink: 'افتح صفحة التنزيل',
+    nativeShare: 'مشاركة عبر…',
   },
 };
 

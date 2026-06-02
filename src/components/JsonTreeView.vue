@@ -2,13 +2,18 @@
 /**
  * 递归 JSON 树。
  *
- * 用法：<JsonTreeView :data="parsedJson" />（顶层是 object/array 即可）
- * 通过文件名做自引用递归，叶子节点直接 inline 渲染基本值。
+ * 基础用法：<JsonTreeView :data="parsedJson" />（顶层是 object/array 即可）
+ *
+ * 搜索增强：传入 query / forceExpandedPaths / currentMatchPath 后：
+ *   - 命中节点的 key 或 value 中的匹配片段会高亮
+ *   - 命中所在祖先链自动展开（来自 forceExpandedPaths）
+ *   - currentMatchPath === 本节点 → 加 .is-current 高亮 + 自动 scrollIntoView
  *
  * 数据量大时，深度 > 1 的节点默认折叠，避免一次性渲染上万节点造成卡顿。
  */
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref, watch, watchEffect } from 'vue';
 import JsonTreeView from './JsonTreeView.vue';
+import { pathToKey, splitByQuery } from '../utils/jsonSearch';
 
 const props = withDefaults(
   defineProps<{
@@ -19,11 +24,23 @@ const props = withDefaults(
     depth?: number;
     /** 是否是数组元素（影响 key 颜色） */
     asArrayItem?: boolean;
+    /** 从根到当前节点的路径，递归时由父级拼接传入 */
+    path?: (string | number)[];
+    /** 搜索词，空字符串表示无搜索 */
+    query?: string;
+    /** 被强制展开的容器节点 pathKey 集合（来自搜索结果） */
+    forceExpandedPaths?: Set<string> | null;
+    /** 当前聚焦的命中节点 pathKey，本节点匹配则会滚入视图并高亮 */
+    currentMatchPath?: string | null;
   }>(),
   {
     name: null,
     depth: 0,
     asArrayItem: false,
+    path: () => [],
+    query: '',
+    forceExpandedPaths: null,
+    currentMatchPath: null,
   }
 );
 
@@ -76,10 +93,20 @@ const entries = computed<Array<[string | number, unknown]>>(() => {
   return [];
 });
 
+const pathKey = computed(() => pathToKey(props.path));
+
 const expanded = ref(
   props.depth < AUTO_EXPAND_DEPTH ||
     (isContainer.value && childCount.value <= LARGE_CONTAINER_THRESHOLD && props.depth < 2)
 );
+
+// 搜索命中所在的祖先链需要被强制展开；只设 true 不设 false，
+// 这样用户后续手动折叠不会被搜索结果反复打开
+watchEffect(() => {
+  if (props.forceExpandedPaths?.has(pathKey.value)) {
+    expanded.value = true;
+  }
+});
 
 function toggle() {
   expanded.value = !expanded.value;
@@ -97,6 +124,54 @@ const keyDisplay = computed(() => {
   if (props.asArrayItem) return `${props.name}`;
   return `"${props.name}"`;
 });
+
+const valueDisplay = computed(() => (isContainer.value ? '' : formatPrimitive(props.data)));
+
+// 只对对象 key 做命中（数组下标不参与搜索，与 searchJson 行为一致）
+const isKeyMatch = computed(() => {
+  if (!props.query || props.asArrayItem || props.name === null) return false;
+  return String(props.name).toLowerCase().includes(props.query.toLowerCase());
+});
+
+const isValueMatch = computed(() => {
+  if (!props.query || isContainer.value || props.data === undefined) return false;
+  const raw =
+    props.data === null
+      ? 'null'
+      : typeof props.data === 'string'
+        ? props.data
+        : String(props.data);
+  return raw.toLowerCase().includes(props.query.toLowerCase());
+});
+
+const isCurrentMatch = computed(
+  () => !!props.currentMatchPath && pathKey.value === props.currentMatchPath
+);
+
+const keySegments = computed(() =>
+  isKeyMatch.value ? splitByQuery(keyDisplay.value, props.query) : null
+);
+const valueSegments = computed(() =>
+  isValueMatch.value ? splitByQuery(valueDisplay.value, props.query) : null
+);
+
+const rowRef = ref<HTMLElement | null>(null);
+
+// 当前命中变化时把对应行滚入可视区
+watch(
+  isCurrentMatch,
+  (active) => {
+    if (!active) return;
+    nextTick(() => {
+      rowRef.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    });
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -104,14 +179,36 @@ const keyDisplay = computed(() => {
     class="jt-node"
     :class="{ 'jt-root': depth === 0, 'jt-container': isContainer }"
   >
-    <div class="jt-row" :class="{ clickable: isContainer }" @click="isContainer && toggle()">
+    <div
+      ref="rowRef"
+      class="jt-row"
+      :class="{
+        clickable: isContainer,
+        'is-current': isCurrentMatch,
+      }"
+      @click="isContainer && toggle()"
+    >
       <span v-if="isContainer" class="jt-toggle" aria-hidden="true">
         {{ expanded ? '▾' : '▸' }}
       </span>
       <span v-else class="jt-toggle jt-toggle-spacer" aria-hidden="true"></span>
 
-      <span v-if="keyDisplay" :class="['jt-key', asArrayItem ? 'jt-key-idx' : 'jt-key-str']">
-        {{ keyDisplay }}<span class="jt-colon">:</span>
+      <span
+        v-if="keyDisplay"
+        :class="[
+          'jt-key',
+          asArrayItem ? 'jt-key-idx' : 'jt-key-str',
+          { 'jt-hl-row': isKeyMatch },
+        ]"
+      >
+        <template v-if="keySegments">
+          <template v-for="(seg, i) in keySegments" :key="i">
+            <mark v-if="seg.match" class="jt-hl">{{ seg.text }}</mark>
+            <template v-else>{{ seg.text }}</template>
+          </template>
+        </template>
+        <template v-else>{{ keyDisplay }}</template>
+        <span class="jt-colon">:</span>
       </span>
 
       <template v-if="isContainer">
@@ -120,7 +217,15 @@ const keyDisplay = computed(() => {
         <span v-if="!expanded" class="jt-bracket">{{ kind === 'array' ? ']' : '}' }}</span>
       </template>
       <template v-else>
-        <span :class="['jt-val', `jt-${kind}`]">{{ formatPrimitive(data) }}</span>
+        <span :class="['jt-val', `jt-${kind}`, { 'jt-hl-row': isValueMatch }]">
+          <template v-if="valueSegments">
+            <template v-for="(seg, i) in valueSegments" :key="i">
+              <mark v-if="seg.match" class="jt-hl">{{ seg.text }}</mark>
+              <template v-else>{{ seg.text }}</template>
+            </template>
+          </template>
+          <template v-else>{{ valueDisplay }}</template>
+        </span>
       </template>
     </div>
 
@@ -133,6 +238,10 @@ const keyDisplay = computed(() => {
           :name="k"
           :depth="depth + 1"
           :as-array-item="kind === 'array'"
+          :path="[...path, k]"
+          :query="query"
+          :force-expanded-paths="forceExpandedPaths"
+          :current-match-path="currentMatchPath"
         />
       </div>
       <div class="jt-row jt-row-close">
@@ -160,6 +269,11 @@ const keyDisplay = computed(() => {
   align-items: baseline;
   gap: 4px;
   flex-wrap: wrap;
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin: 0 -4px;
+  scroll-margin: 60px;
+  transition: background 0.2s ease;
 }
 .jt-row.clickable {
   cursor: pointer;
@@ -167,6 +281,10 @@ const keyDisplay = computed(() => {
 .jt-row.clickable:hover .jt-summary,
 .jt-row.clickable:hover .jt-bracket {
   color: var(--accent);
+}
+.jt-row.is-current {
+  background: rgba(98, 64, 232, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(98, 64, 232, 0.45);
 }
 
 .jt-toggle {
@@ -240,5 +358,17 @@ const keyDisplay = computed(() => {
 .jt-undefined {
   color: var(--tok-null);
   font-style: italic;
+}
+
+.jt-hl {
+  background: rgba(255, 213, 79, 0.55);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 600;
+}
+:global([data-theme='dark']) .jt-hl {
+  background: rgba(255, 184, 0, 0.45);
+  color: #ffe9a8;
 }
 </style>

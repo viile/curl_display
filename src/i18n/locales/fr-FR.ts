@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Texte',
     formatTree: 'Arbre',
     formatMind: 'Carte mentale',
+    searchPlaceholder: 'Rechercher dans le JSON…',
+    searchEmpty: 'Aucun résultat',
+    searchPrev: 'Résultat précédent',
+    searchNext: 'Résultat suivant',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Historique désactivé',
     disabledMsg: 'Acceptez le stockage local pour sauvegarder et consulter l\'historique.',
     enabled: 'Historique activé',
+    favorite: 'Ajouter aux favoris',
+    unfavorite: 'Retirer des favoris',
+    confirmClearKeepFav:
+      "Effacer tout l'historique non favori ? {count} favori(s) seront conservés.",
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: "Télécharger l'application bureau",
     desktopAppHint:
       "L'application bureau invoque directement le curl système — aucune restriction CORS, en-têtes ou TLS, aucun serveur requis.",
+  },
+
+  share: {
+    button: 'Partager',
+    title: 'Partager le lien de téléchargement',
+    subtitle: "Envoyez le lien de l'app desktop à vos amis ou à votre mobile",
+    copy: 'Copier le lien',
+    copied: 'Lien copié dans le presse-papiers',
+    qrHint: 'Scanner pour télécharger sur mobile',
+    openLink: 'Ouvrir la page de téléchargement',
+    nativeShare: 'Partager via…',
   },
 };
 

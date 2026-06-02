@@ -1,15 +1,24 @@
 name: Build desktop release
 
+# 跨仓库发布说明：
+#   - 本仓库（私有）保留源码 + 这套 workflow。
+#   - 实际安装包发布到另一个**公开**仓库 viile/curl_runner 的 Releases。
+#   - 前提：在本仓库的 Secrets 里配置一个名为 RELEASE_REPO_TOKEN 的
+#     fine-grained PAT，授予 viile/curl_runner 的 Contents: Read and write 权限。
+#   - 推一个 v* tag（或手动 dispatch）即触发，产物会以 Draft Release 形式
+#     聚合到公开仓库，确认无误后在公开仓库的 Releases 页面点击 Publish。
+
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
 
+env:
+  PUBLIC_RELEASE_REPO: viile/curl_runner
+
 jobs:
   build:
-    permissions:
-      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -65,19 +74,49 @@ jobs:
 
       - run: npm ci
 
-      - name: Build & release
+      # 只构建，不让 tauri-action 创建 release（不传 tagName 即纯 build 模式）
+      - name: Build desktop bundles
+        id: build
         uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'cURL Runner ${{ github.ref_name }}'
-          releaseBody: |
-            桌面版本下载：
-            - macOS Apple Silicon → `*_aarch64.dmg`
-            - macOS Intel → `*_x64.dmg`
-            - Windows → `*_x64-setup.exe` / `*_x64_en-US.msi`
-            - Linux → `*.AppImage` / `*.deb`
-          releaseDraft: true
-          prerelease: false
           args: ${{ matrix.args }}
+
+      # tauri-action 的 artifactPaths 输出是 JSON 数组字符串，
+      # softprops/action-gh-release 的 files 接收的是「换行分隔」的 glob，
+      # 这一步把它从 JSON 数组拆成多行字符串塞进 step output。
+      - name: Stage artifact paths
+        id: stage
+        shell: bash
+        run: |
+          {
+            echo 'list<<ARTIFACTS_EOF'
+            echo '${{ steps.build.outputs.artifactPaths }}' | jq -r '.[]'
+            echo 'ARTIFACTS_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      # 用 PAT 跨仓库把产物挂到公开 repo 的同名 tag 上。
+      # 多个 matrix job 会并行调用：softprops 会在第一个调用时创建 Release，
+      # 后续调用会把各自的产物 append 进去（按文件名去重 / 覆盖）。
+      - name: Publish to public release repo
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: ${{ env.PUBLIC_RELEASE_REPO }}
+          token: ${{ secrets.RELEASE_REPO_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          name: 'cURL Runner ${{ github.ref_name }}'
+          draft: true
+          prerelease: false
+          fail_on_unmatched_files: false
+          body: |
+            桌面版本下载（请选择匹配你系统的安装包）：
+
+            | 平台 | 文件 |
+            |---|---|
+            | macOS Apple Silicon (M1/M2/M3) | `*_aarch64.dmg` |
+            | macOS Intel | `*_x64.dmg` |
+            | Windows 10/11 | `*_x64-setup.exe` 或 `*_x64_en-US.msi` |
+            | Linux (Ubuntu/Debian) | `*.deb` |
+            | Linux (通用) | `*.AppImage` |
+
+            首次打开 macOS / Windows 可能被系统拦截，按平台说明放行即可。
+          files: ${{ steps.stage.outputs.list }}

@@ -6,6 +6,7 @@ import CurlEditor from './components/CurlEditor.vue';
 import ResultPanel from './components/ResultPanel.vue';
 import LanguageSwitcher from './components/LanguageSwitcher.vue';
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
+import ShareButton from './components/ShareButton.vue';
 import ConsentBanner from './components/ConsentBanner.vue';
 import { executeCurl, type ExecuteResult, type EngineType } from './api/execute';
 import { currentElementLocale } from './i18n';
@@ -117,6 +118,7 @@ watch(command, (val) => {
             rel="noreferrer"
             >{{ t('app.docsLink') }} ↗</a
           >
+          <ShareButton />
           <ThemeSwitcher />
           <LanguageSwitcher />
         </div>

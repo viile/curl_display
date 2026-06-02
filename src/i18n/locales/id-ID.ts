@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Teks',
     formatTree: 'Pohon',
     formatMind: 'Peta pikiran',
+    searchPlaceholder: 'Cari di JSON…',
+    searchEmpty: 'Tidak ada hasil',
+    searchPrev: 'Hasil sebelumnya',
+    searchNext: 'Hasil berikutnya',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Riwayat dinonaktifkan',
     disabledMsg: 'Terima penyimpanan lokal untuk menyimpan dan melihat riwayat.',
     enabled: 'Riwayat diaktifkan',
+    favorite: 'Tambah ke favorit',
+    unfavorite: 'Hapus dari favorit',
+    confirmClearKeepFav:
+      'Hapus semua riwayat non-favorit? {count} favorit akan dipertahankan.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Unduh aplikasi desktop',
     desktopAppHint:
       'Aplikasi desktop memanggil curl sistem secara langsung — tanpa batasan CORS, header, atau TLS, tanpa perlu server.',
+  },
+
+  share: {
+    button: 'Bagikan',
+    title: 'Bagikan tautan unduh',
+    subtitle: 'Kirim tautan aplikasi desktop ke teman atau ke ponsel Anda',
+    copy: 'Salin tautan',
+    copied: 'Tautan disalin ke papan klip',
+    qrHint: 'Pindai untuk mengunduh di ponsel',
+    openLink: 'Buka halaman unduh',
+    nativeShare: 'Bagikan melalui…',
   },
 };
 

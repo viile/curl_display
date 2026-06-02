@@ -10,11 +10,15 @@ import {
   Document,
   Share,
   Connection,
+  Search,
+  ArrowUp,
+  ArrowDown,
 } from '@element-plus/icons-vue';
 import type { ExecuteResult } from '../api/execute';
 import { DESKTOP_DOWNLOAD_URL } from '../config/links';
 import JsonTreeView from './JsonTreeView.vue';
 import JsonMindMap from './JsonMindMap.vue';
+import { searchJson } from '../utils/jsonSearch';
 
 type BodyFormat = 'text' | 'tree' | 'mind';
 
@@ -29,14 +33,18 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const activeTab = ref<'body' | 'headers' | 'raw'>('body');
-const bodyFormat = ref<BodyFormat>('text');
+// 默认 tree 视图：JSON 场景占多数，树形比纯文本更易读
+const bodyFormat = ref<BodyFormat>('tree');
+const searchQuery = ref('');
+const currentMatchIndex = ref(0);
 
 watch(
   () => props.result,
   () => {
     activeTab.value = 'body';
-    // 每次新结果回到默认格式，避免上一条遗留的视图状态干扰
-    bodyFormat.value = 'text';
+    bodyFormat.value = 'tree';
+    searchQuery.value = '';
+    currentMatchIndex.value = 0;
   }
 );
 
@@ -149,6 +157,47 @@ const parsedBody = computed<unknown>(() => {
 });
 
 const canShowStructured = computed(() => parsedBody.value !== null);
+
+const searchActive = computed(
+  () => activeTab.value === 'body' && bodyFormat.value === 'tree' && canShowStructured.value
+);
+
+const searchResult = computed(() => {
+  if (!searchActive.value || !searchQuery.value.trim()) {
+    return { matches: [], expandedPaths: new Set<string>(), truncated: false };
+  }
+  return searchJson(parsedBody.value, searchQuery.value, { maxMatches: 500 });
+});
+
+const totalMatches = computed(() => searchResult.value.matches.length);
+
+watch([searchQuery, () => bodyFormat.value, () => parsedBody.value], () => {
+  currentMatchIndex.value = 0;
+});
+
+const safeCurrentIndex = computed(() => {
+  if (!totalMatches.value) return -1;
+  const max = totalMatches.value - 1;
+  const i = currentMatchIndex.value;
+  if (i < 0) return 0;
+  if (i > max) return max;
+  return i;
+});
+
+const currentMatchPath = computed<string | null>(() => {
+  if (safeCurrentIndex.value < 0) return null;
+  return searchResult.value.matches[safeCurrentIndex.value].pathKey;
+});
+
+function gotoMatch(delta: number) {
+  if (!totalMatches.value) return;
+  const total = totalMatches.value;
+  currentMatchIndex.value = (safeCurrentIndex.value + delta + total) % total;
+}
+
+function onSearchEnter(event: KeyboardEvent) {
+  gotoMatch(event.shiftKey ? -1 : 1);
+}
 
 interface FormatOption {
   key: BodyFormat;
@@ -305,11 +354,59 @@ const headerCount = computed(() =>
         </div>
       </div>
 
+      <div
+        v-if="searchActive"
+        class="json-search-bar"
+        :class="{ 'has-query': !!searchQuery.trim() }"
+      >
+        <el-input
+          v-model="searchQuery"
+          :placeholder="t('result.searchPlaceholder')"
+          size="small"
+          clearable
+          :prefix-icon="Search"
+          @keydown.enter="onSearchEnter"
+        />
+        <div v-if="searchQuery.trim()" class="search-meta">
+          <span v-if="totalMatches" class="search-count" aria-live="polite">
+            {{ safeCurrentIndex + 1 }} / {{ totalMatches }}{{ searchResult.truncated ? '+' : '' }}
+          </span>
+          <span v-else class="search-count search-count-empty" aria-live="polite">
+            {{ t('result.searchEmpty') }}
+          </span>
+          <button
+            type="button"
+            class="search-nav-btn"
+            :disabled="!totalMatches"
+            :title="t('result.searchPrev')"
+            :aria-label="t('result.searchPrev')"
+            @click="gotoMatch(-1)"
+          >
+            <el-icon :size="13"><ArrowUp /></el-icon>
+          </button>
+          <button
+            type="button"
+            class="search-nav-btn"
+            :disabled="!totalMatches"
+            :title="t('result.searchNext')"
+            :aria-label="t('result.searchNext')"
+            @click="gotoMatch(1)"
+          >
+            <el-icon :size="13"><ArrowDown /></el-icon>
+          </button>
+        </div>
+      </div>
+
       <div class="tab-body" :class="{ 'no-pad': activeTab === 'body' && bodyFormat === 'mind' && canShowStructured }">
         <template v-if="activeTab === 'body'">
           <div v-if="!result.body" class="muted">{{ t('result.emptyBody') }}</div>
           <template v-else-if="canShowStructured && bodyFormat === 'tree'">
-            <JsonTreeView :data="parsedBody" />
+            <JsonTreeView
+              :data="parsedBody"
+              :query="searchQuery"
+              :force-expanded-paths="searchResult.expandedPaths"
+              :current-match-path="currentMatchPath"
+            />
           </template>
           <template v-else-if="canShowStructured && bodyFormat === 'mind'">
             <JsonMindMap :data="parsedBody" />
@@ -612,6 +709,59 @@ const headerCount = computed(() =>
 }
 .format-btn-text {
   font-weight: 500;
+}
+
+.json-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+}
+.json-search-bar :deep(.el-input) {
+  flex: 1;
+  max-width: 360px;
+}
+.search-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  user-select: none;
+}
+.search-count {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  min-width: 56px;
+  text-align: center;
+}
+.search-count-empty {
+  color: var(--warn);
+}
+.search-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  padding: 0;
+}
+.search-nav-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--hover);
+}
+.search-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .tab-body {

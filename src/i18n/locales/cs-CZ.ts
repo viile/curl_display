@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Text',
     formatTree: 'Strom',
     formatMind: 'Myšlenková mapa',
+    searchPlaceholder: 'Hledat v JSON…',
+    searchEmpty: 'Žádné shody',
+    searchPrev: 'Předchozí shoda',
+    searchNext: 'Další shoda',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Historie je vypnutá',
     disabledMsg: 'Povolte místní úložiště pro ukládání a prohlížení historie.',
     enabled: 'Historie zapnuta',
+    favorite: 'Přidat do oblíbených',
+    unfavorite: 'Odebrat z oblíbených',
+    confirmClearKeepFav:
+      'Vymazat veškerou historii kromě oblíbených? {count} oblíbených bude zachováno.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Stáhnout desktopovou aplikaci',
     desktopAppHint:
       'Desktopová aplikace přímo volá systémový curl — žádná omezení CORS, hlaviček ani TLS, žádný server není potřeba.',
+  },
+
+  share: {
+    button: 'Sdílet',
+    title: 'Sdílet odkaz na stažení',
+    subtitle: 'Pošlete odkaz na desktopovou aplikaci přátelům nebo na svůj telefon',
+    copy: 'Kopírovat odkaz',
+    copied: 'Odkaz zkopírován do schránky',
+    qrHint: 'Naskenujte pro stažení na mobilu',
+    openLink: 'Otevřít stránku stažení',
+    nativeShare: 'Sdílet přes…',
   },
 };
 

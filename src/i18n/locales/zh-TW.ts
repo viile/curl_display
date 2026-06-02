@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: '文字',
     formatTree: '樹形',
     formatMind: '腦圖',
+    searchPlaceholder: '在 JSON 中搜尋…',
+    searchEmpty: '無相符項目',
+    searchPrev: '上一個相符',
+    searchNext: '下一個相符',
   },
 
   consent: {
@@ -84,6 +88,9 @@ const messages: Messages = {
     disabledTitle: '歷史記錄未啟用',
     disabledMsg: '同意使用本地儲存後即可保存並檢視執行歷史。',
     enabled: '歷史記錄已啟用',
+    favorite: '收藏',
+    unfavorite: '取消收藏',
+    confirmClearKeepFav: '清空所有非收藏歷史？將保留 {count} 個收藏項目。',
   },
 
   theme: {
@@ -107,6 +114,17 @@ const messages: Messages = {
     desktopHint: '已執行在桌面應用內 · 直接呼叫系統 curl',
     downloadDesktop: '下載桌面應用',
     desktopAppHint: '桌面版直接呼叫系統 curl，無 CORS / header / TLS 任何限制，無需啟動 server。',
+  },
+
+  share: {
+    button: '分享',
+    title: '分享下載連結',
+    subtitle: '把桌面版連結傳給朋友或自己的手機',
+    copy: '複製連結',
+    copied: '連結已複製',
+    qrHint: '手機掃碼下載',
+    openLink: '開啟下載頁',
+    nativeShare: '透過應用程式分享…',
   },
 };
 

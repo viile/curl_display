@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Metin',
     formatTree: 'Ağaç',
     formatMind: 'Zihin haritası',
+    searchPlaceholder: 'JSON içinde ara…',
+    searchEmpty: 'Eşleşme yok',
+    searchPrev: 'Önceki eşleşme',
+    searchNext: 'Sonraki eşleşme',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Geçmiş devre dışı',
     disabledMsg: 'Yerel depolamayı kabul ederek yürütme geçmişini kaydedip görebilirsiniz.',
     enabled: 'Geçmiş etkinleştirildi',
+    favorite: 'Favorilere ekle',
+    unfavorite: 'Favorilerden çıkar',
+    confirmClearKeepFav:
+      'Favori olmayan tüm geçmiş silinsin mi? {count} favori öğe korunacaktır.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Masaüstü uygulamasını indir',
     desktopAppHint:
       "Masaüstü uygulaması sistem curl'unu doğrudan çağırır — CORS, başlık veya TLS kısıtlaması yok, sunucu gerekmez.",
+  },
+
+  share: {
+    button: 'Paylaş',
+    title: 'İndirme bağlantısını paylaş',
+    subtitle: 'Masaüstü uygulaması bağlantısını arkadaşlarına veya telefonuna gönder',
+    copy: 'Bağlantıyı kopyala',
+    copied: 'Bağlantı panoya kopyalandı',
+    qrHint: 'Mobilde indirmek için tarayın',
+    openLink: 'İndirme sayfasını aç',
+    nativeShare: 'Şununla paylaş…',
   },
 };
 

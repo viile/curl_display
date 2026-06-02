@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Text',
     formatTree: 'Tree',
     formatMind: 'Mind map',
+    searchPlaceholder: 'Search in JSON…',
+    searchEmpty: 'No matches',
+    searchPrev: 'Previous match',
+    searchNext: 'Next match',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'History is disabled',
     disabledMsg: 'Accept local storage to save and view your execution history.',
     enabled: 'History enabled',
+    favorite: 'Add to favorites',
+    unfavorite: 'Remove from favorites',
+    confirmClearKeepFav:
+      'Clear all non-favorite history? {count} favorited item(s) will be kept.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Download desktop app',
     desktopAppHint:
       'The desktop app invokes your system curl directly — no CORS, no header restrictions, no TLS limits, no server required.',
+  },
+
+  share: {
+    button: 'Share',
+    title: 'Share download link',
+    subtitle: 'Send the desktop app link to friends or your own phone',
+    copy: 'Copy link',
+    copied: 'Link copied to clipboard',
+    qrHint: 'Scan to download on mobile',
+    openLink: 'Open download page',
+    nativeShare: 'Share via…',
   },
 };
 

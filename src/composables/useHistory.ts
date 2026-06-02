@@ -13,6 +13,8 @@ export interface HistoryItem {
   command: string;
   result: ExecuteResult | null;
   timestamp: number;
+  /** 收藏标记。收藏项不会被 clear all 删除，配额吃紧或 trim 时也优先保留 */
+  favorite?: boolean;
 }
 
 const items = ref<HistoryItem[]>([]);
@@ -56,9 +58,9 @@ function load() {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      items.value = parsed.filter(
-        (i) => i && typeof i.command === 'string' && typeof i.timestamp === 'number'
-      );
+      items.value = parsed
+        .filter((i) => i && typeof i.command === 'string' && typeof i.timestamp === 'number')
+        .map((i) => ({ ...i, favorite: !!i.favorite }));
     }
   } catch {
     items.value = [];
@@ -69,16 +71,22 @@ function persist() {
   if (consent.value !== 'accepted') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value));
+    return;
   } catch {
-    // 配额耗尽：减半重试
-    while (items.value.length > 1) {
-      items.value = items.value.slice(0, Math.floor(items.value.length / 2));
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value));
-        return;
-      } catch {
-        /* keep shrinking */
-      }
+    /* fall through to shrink */
+  }
+  // 配额耗尽：保留所有收藏，砍掉一半最旧的非收藏项，循环到能写入或只剩收藏
+  while (true) {
+    const nonFavs = items.value.filter((i) => !i.favorite);
+    if (nonFavs.length === 0) return;
+    const keepNonFav = Math.floor(nonFavs.length / 2);
+    const keepIds = new Set(nonFavs.slice(0, keepNonFav).map((i) => i.id));
+    items.value = items.value.filter((i) => i.favorite || keepIds.has(i.id));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value));
+      return;
+    } catch {
+      /* continue shrinking */
     }
   }
 }
@@ -102,6 +110,7 @@ export function useHistory() {
 
   /**
    * 追加一条历史。每次调用都新增一条（不去重），允许同一命令在不同时间多次出现。
+   * 超过 MAX_ITEMS 时优先砍最旧的非收藏项，收藏项永远不会被自动 trim。
    */
   function record(command: string, result: ExecuteResult | null) {
     if (consent.value !== 'accepted') return;
@@ -111,10 +120,18 @@ export function useHistory() {
       command,
       result: trimBody(result),
       timestamp: Date.now(),
+      favorite: false,
     };
     items.value.unshift(item);
     if (items.value.length > MAX_ITEMS) {
-      items.value = items.value.slice(0, MAX_ITEMS);
+      const favs = items.value.filter((i) => i.favorite);
+      const nonFavs = items.value.filter((i) => !i.favorite);
+      const remaining = Math.max(0, MAX_ITEMS - favs.length);
+      const keepIds = new Set([
+        ...favs.map((i) => i.id),
+        ...nonFavs.slice(0, remaining).map((i) => i.id),
+      ]);
+      items.value = items.value.filter((i) => keepIds.has(i.id));
     }
     persist();
   }
@@ -127,12 +144,27 @@ export function useHistory() {
     }
   }
 
+  function toggleFavorite(id: string) {
+    const item = items.value.find((i) => i.id === id);
+    if (!item) return;
+    item.favorite = !item.favorite;
+    persist();
+  }
+
+  /**
+   * 清空历史，但保留所有收藏项。
+   * 如果连同收藏一起清，请手动逐条 remove 或直接清 localStorage。
+   */
   function clear() {
-    items.value = [];
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
+    items.value = items.value.filter((i) => i.favorite);
+    if (items.value.length === 0) {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        /* ignore */
+      }
+    } else {
+      persist();
     }
   }
 
@@ -145,8 +177,10 @@ export function useHistory() {
   return {
     items,
     count: computed(() => items.value.length),
+    favoriteCount: computed(() => items.value.filter((i) => i.favorite).length),
     record,
     remove,
+    toggleFavorite,
     clear,
     findByCommand,
   };

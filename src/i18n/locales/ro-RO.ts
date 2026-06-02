@@ -61,6 +61,10 @@ const messages: Messages = {
     formatText: 'Text',
     formatTree: 'Arbore',
     formatMind: 'Hartă mentală',
+    searchPlaceholder: 'Caută în JSON…',
+    searchEmpty: 'Niciun rezultat',
+    searchPrev: 'Rezultat anterior',
+    searchNext: 'Rezultat următor',
   },
 
   consent: {
@@ -84,6 +88,10 @@ const messages: Messages = {
     disabledTitle: 'Istoric dezactivat',
     disabledMsg: 'Acceptă stocarea locală pentru a salva și vedea istoricul.',
     enabled: 'Istoric activat',
+    favorite: 'Adaugă la favorite',
+    unfavorite: 'Elimină de la favorite',
+    confirmClearKeepFav:
+      'Ștergi tot istoricul nefavorit? {count} elemente favorite vor fi păstrate.',
   },
 
   theme: {
@@ -108,6 +116,17 @@ const messages: Messages = {
     downloadDesktop: 'Descarcă aplicația desktop',
     desktopAppHint:
       'Aplicația desktop invocă direct curl-ul sistemului — fără restricții CORS, anteturi sau TLS, fără server.',
+  },
+
+  share: {
+    button: 'Distribuie',
+    title: 'Distribuie linkul de descărcare',
+    subtitle: 'Trimite linkul aplicației desktop prietenilor sau pe telefonul tău',
+    copy: 'Copiază linkul',
+    copied: 'Link copiat în clipboard',
+    qrHint: 'Scanează pentru a descărca pe mobil',
+    openLink: 'Deschide pagina de descărcare',
+    nativeShare: 'Distribuie prin…',
   },
 };
 

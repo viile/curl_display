@@ -51,10 +51,10 @@ watch(popoverVisible, (v) => {
     :show-arrow="false"
   >
     <template #reference>
-      <button class="lang-trigger" type="button" :title="currentLocaleOption.englishName">
-        <span class="flag">{{ currentLocaleOption.flag }}</span>
-        <span class="label">{{ currentLocaleOption.short }}</span>
-        <el-icon class="caret"><ArrowDown /></el-icon>
+      <button class="hdr-btn" type="button" :title="currentLocaleOption.englishName">
+        <span class="lang-flag">{{ currentLocaleOption.flag }}</span>
+        <span class="hdr-btn-label">{{ currentLocaleOption.short }}</span>
+        <el-icon class="hdr-btn-caret"><ArrowDown /></el-icon>
       </button>
     </template>
 
@@ -100,38 +100,11 @@ watch(popoverVisible, (v) => {
 </template>
 
 <style scoped>
-.lang-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 5px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background 0.15s, border-color 0.15s;
-}
-.lang-trigger:hover {
-  background: var(--hover);
-  border-color: var(--border-strong);
-}
-.lang-trigger:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-.flag {
+/* 触发器样式见 src/styles/global.css 里的 .hdr-btn */
+.lang-flag {
   font-size: 14px;
   line-height: 1;
-}
-.label {
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-.caret {
-  font-size: 12px;
-  color: var(--text-dim);
+  flex-shrink: 0;
 }
 
 .lang-panel {
