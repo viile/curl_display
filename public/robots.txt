@@ -5,4 +5,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location (replace host if you deploy elsewhere)
-Sitemap: https://viile.github.io/curl_display/sitemap.xml
+Sitemap: https://viile.github.io/curl_runner/app/sitemap.xml

@@ -7,7 +7,7 @@ import vue from '@vitejs/plugin-vue';
  *   - 生产构建 → 优先用 VITE_BASE 环境变量；否则 '/'
  *
  * 典型部署：
- *   - GitHub Pages (project page)：`VITE_BASE=/curl_display/ npm run build`
+ *   - GitHub Pages (project page)：`VITE_BASE=/curl_runner/app/ npm run build`
  *   - 自定义域名根目录 / Tauri：保持默认 '/'
  */
 export default defineConfig(({ command }) => ({

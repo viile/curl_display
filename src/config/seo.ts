@@ -10,7 +10,7 @@
  *
  * 这些值会被注入 <meta>、JSON-LD、sitemap 等地方。
  */
-export const SITE_URL = 'https://viile.github.io/curl_display';
+export const SITE_URL = 'https://viile.github.io/curl_runner/app';
 export const SITE_NAME = 'cURL Runner';
 export const SITE_SLOGAN = 'Run, format and visualize curl commands locally';
 /**

@@ -2,8 +2,8 @@
   "name": "cURL Runner",
   "short_name": "cURL Runner",
   "description": "Run, format and visualize curl commands locally in your browser.",
-  "start_url": "/curl_display/",
-  "scope": "/curl_display/",
+  "start_url": "/curl_runner/app/",
+  "scope": "/curl_runner/app/",
   "display": "standalone",
   "background_color": "#f5f6fa",
   "theme_color": "#6240e8",
@@ -11,7 +11,7 @@
   "categories": ["developer", "utilities", "productivity"],
   "icons": [
     {
-      "src": "/curl_display/apple-touch-icon.png",
+      "src": "/curl_runner/app/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
