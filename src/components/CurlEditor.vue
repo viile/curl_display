@@ -188,13 +188,23 @@ function handleKeyDown(e: KeyboardEvent) {
   border-bottom: 1px solid var(--border);
   background: var(--panel-2);
   gap: 8px;
+  row-gap: 8px;
   flex-wrap: wrap;
 }
 .toolbar-left,
 .toolbar-right {
   display: flex;
   gap: 8px;
+  row-gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+/* 当窄屏导致 toolbar-right 折行时，仍把它推到右侧，
+   避免和 space-between 在单行情况下冲突：单行时 space-between 自然分隔，
+   折行成单独一行时 margin-left:auto 起作用，使其贴右。 */
+.toolbar-right {
+  margin-left: auto;
 }
 .kbd {
   display: inline-block;

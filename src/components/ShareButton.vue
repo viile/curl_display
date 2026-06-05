@@ -18,6 +18,7 @@ import { Share, DocumentCopy, Connection, ArrowDown } from '@element-plus/icons-
 import QRCode from 'qrcode';
 import { DESKTOP_DOWNLOAD_URL } from '../config/links';
 import { useTheme } from '../composables/useTheme';
+import { openExternal } from '../utils/openExternal';
 
 const { t } = useI18n();
 const { effective: effectiveTheme } = useTheme();
@@ -130,7 +131,13 @@ async function handleNativeShare() {
       </div>
 
       <div class="actions">
-        <a class="action-btn primary" :href="url" target="_blank" rel="noopener">
+        <a
+          class="action-btn primary"
+          :href="url"
+          target="_blank"
+          rel="noopener noreferrer"
+          @click.prevent="openExternal(url)"
+        >
           {{ t('share.openLink') }}
         </a>
         <button

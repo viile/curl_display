@@ -85,6 +85,25 @@ function summarize(cmd: string) {
   return extractCurlSummary(cmd);
 }
 
+/**
+ * 列表里只展示请求 URL 的 path（含 query/hash），去掉协议+域名+端口。
+ * 这样窄列表里也能看清接口名，悬停时再通过 :title 看完整 URL。
+ *
+ * - 标准 URL：用 URL API，pathname 为空时退化为 '/'
+ * - 解析失败：用正则尝试剥离 `scheme://host[:port]` 前缀；都不行就原样返回。
+ */
+function urlPath(url: string): string {
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    return (u.pathname || '/') + u.search + u.hash;
+  } catch {
+    const m = url.match(/^[a-zA-Z][\w+.-]*:\/\/[^/]*(\/.*)?$/);
+    if (m) return m[1] || '/';
+    return url;
+  }
+}
+
 function timeAgo(ts: number): string {
   const diffSec = Math.round((ts - Date.now()) / 1000);
   try {
@@ -261,7 +280,7 @@ function handleEnableHistory() {
                 ERR
               </span>
               <span class="url-text" :title="summarize(item.command).url">
-                {{ summarize(item.command).url || t('history.untitled') }}
+                {{ urlPath(summarize(item.command).url) || t('history.untitled') }}
               </span>
               <button
                 type="button"

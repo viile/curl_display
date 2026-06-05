@@ -13,6 +13,9 @@ import { currentElementLocale } from './i18n';
 import { useHistory, type HistoryItem } from './composables/useHistory';
 import { useEngine } from './composables/useEngine';
 import { useSeo } from './composables/useSeo';
+import { openExternal } from './utils/openExternal';
+
+const CURL_DOCS_URL = 'https://curl.se/';
 
 const { t } = useI18n();
 // 跟随 locale 动态刷新 <title> / <meta description> / OG 等 SEO 标签
@@ -113,9 +116,10 @@ watch(command, (val) => {
         <div class="header-meta">
           <a
             class="repo-link"
-            href="https://curl.se/docs/manpage.html"
+            :href="CURL_DOCS_URL"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
+            @click.prevent="openExternal(CURL_DOCS_URL)"
             >{{ t('app.docsLink') }} ↗</a
           >
           <ShareButton />

@@ -19,6 +19,7 @@ import { DESKTOP_DOWNLOAD_URL } from '../config/links';
 import JsonTreeView from './JsonTreeView.vue';
 import JsonMindMap from './JsonMindMap.vue';
 import { searchJson } from '../utils/jsonSearch';
+import { openExternal } from '../utils/openExternal';
 
 type BodyFormat = 'text' | 'tree' | 'mind';
 
@@ -278,7 +279,8 @@ const headerCount = computed(() =>
                 class="download-desktop-btn"
                 :href="DESKTOP_DOWNLOAD_URL"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
+                @click.prevent="openExternal(DESKTOP_DOWNLOAD_URL)"
               >
                 <el-icon :size="14"><Monitor /></el-icon>
                 <span>{{ t('engine.downloadDesktop') }}</span>
