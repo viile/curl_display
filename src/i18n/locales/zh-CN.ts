@@ -18,6 +18,7 @@ const messages = {
     running: '执行中',
     format: '格式化',
     minify: '压缩',
+    decode: '解码',
     copy: '复制',
     clear: '清空',
     placeholder:
@@ -123,6 +124,30 @@ const messages = {
     qrHint: '手机扫码下载',
     openLink: '打开下载页',
     nativeShare: '通过应用分享…',
+  },
+
+  decode: {
+    title: 'curl 解码视图',
+    empty: '当前 curl 命令没有可解码的参数',
+    sectionQuery: 'URL 查询参数',
+    sectionHeaders: '请求头',
+    sectionCookies: 'Cookie',
+    sectionForm: '表单字段 (-F)',
+    sectionData: '请求体数据',
+    colKey: '参数名',
+    colValue: '值',
+    colRaw: '原始值',
+    colDecoded: '解码后',
+    colHeaderName: '名称',
+    colHeaderValue: '值',
+    copyUrl: '复制 URL',
+    copyRaw: '复制原文',
+    copyAll: '复制全部',
+    copied: '已复制',
+    close: '关闭',
+    parseErrorTitle: '解析失败',
+    warningsTitle: '解析提示',
+    kindText: '纯文本',
   },
 };
 

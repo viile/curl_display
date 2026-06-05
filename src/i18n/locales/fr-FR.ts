@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Exécution',
     format: 'Formater',
     minify: 'Réduire',
+    decode: 'Décoder',
     copy: 'Copier',
     clear: 'Effacer',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'Ouvrir la page de téléchargement',
     nativeShare: 'Partager via…',
   },
+  decode: {
+    title: 'Décodeur curl',
+    empty: 'Aucun paramètre décodable dans cette commande',
+    sectionQuery: 'Paramètres de requête URL',
+    sectionHeaders: 'En-têtes',
+    sectionCookies: 'Cookies',
+    sectionForm: 'Champs de formulaire (-F)',
+    sectionData: 'Corps de la requête',
+    colKey: 'Clé',
+    colValue: 'Valeur',
+    colRaw: 'Brut',
+    colDecoded: 'Décodé',
+    colHeaderName: 'Nom',
+    colHeaderValue: 'Valeur',
+    copyUrl: 'Copier l\'URL',
+    copyRaw: 'Copier le brut',
+    copyAll: 'Tout copier',
+    copied: 'Copié',
+    close: 'Fermer',
+    parseErrorTitle: 'Échec de l\'analyse',
+    warningsTitle: 'Avertissements',
+    kindText: 'Texte',
+  },
+
 };
 
 export default messages;

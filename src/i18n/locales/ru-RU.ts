@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Выполняется',
     format: 'Форматировать',
     minify: 'Сжать',
+    decode: 'Декодировать',
     copy: 'Копировать',
     clear: 'Очистить',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'Открыть страницу загрузки',
     nativeShare: 'Поделиться через…',
   },
+  decode: {
+    title: 'Декодер curl',
+    empty: 'В этой команде нет параметров для декодирования',
+    sectionQuery: 'Параметры URL-запроса',
+    sectionHeaders: 'Заголовки',
+    sectionCookies: 'Cookies',
+    sectionForm: 'Поля формы (-F)',
+    sectionData: 'Тело запроса',
+    colKey: 'Ключ',
+    colValue: 'Значение',
+    colRaw: 'Исходное',
+    colDecoded: 'Декодировано',
+    colHeaderName: 'Имя',
+    colHeaderValue: 'Значение',
+    copyUrl: 'Копировать URL',
+    copyRaw: 'Копировать исходное',
+    copyAll: 'Копировать всё',
+    copied: 'Скопировано',
+    close: 'Закрыть',
+    parseErrorTitle: 'Ошибка разбора',
+    warningsTitle: 'Предупреждения',
+    kindText: 'Текст',
+  },
+
 };
 
 export default messages;

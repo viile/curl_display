@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Đang chạy',
     format: 'Định dạng',
     minify: 'Rút gọn',
+    decode: 'Giải mã',
     copy: 'Sao chép',
     clear: 'Xóa',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'Mở trang tải xuống',
     nativeShare: 'Chia sẻ qua…',
   },
+  decode: {
+    title: 'Bộ giải mã curl',
+    empty: 'Không có tham số nào để giải mã',
+    sectionQuery: 'Tham số truy vấn URL',
+    sectionHeaders: 'Tiêu đề',
+    sectionCookies: 'Cookie',
+    sectionForm: 'Trường biểu mẫu (-F)',
+    sectionData: 'Thân yêu cầu',
+    colKey: 'Khóa',
+    colValue: 'Giá trị',
+    colRaw: 'Gốc',
+    colDecoded: 'Đã giải mã',
+    colHeaderName: 'Tên',
+    colHeaderValue: 'Giá trị',
+    copyUrl: 'Sao chép URL',
+    copyRaw: 'Sao chép gốc',
+    copyAll: 'Sao chép tất cả',
+    copied: 'Đã sao chép',
+    close: 'Đóng',
+    parseErrorTitle: 'Phân tích thất bại',
+    warningsTitle: 'Cảnh báo',
+    kindText: 'Văn bản',
+  },
+
 };
 
 export default messages;

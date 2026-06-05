@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Berjalan',
     format: 'Format',
     minify: 'Perkecil',
+    decode: 'Dekode',
     copy: 'Salin',
     clear: 'Bersihkan',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'Buka halaman unduh',
     nativeShare: 'Bagikan melalui…',
   },
+  decode: {
+    title: 'Dekoder curl',
+    empty: 'Tidak ada parameter yang dapat didekode di perintah ini',
+    sectionQuery: 'Parameter kueri URL',
+    sectionHeaders: 'Header',
+    sectionCookies: 'Cookie',
+    sectionForm: 'Bidang formulir (-F)',
+    sectionData: 'Isi permintaan',
+    colKey: 'Kunci',
+    colValue: 'Nilai',
+    colRaw: 'Asli',
+    colDecoded: 'Didekode',
+    colHeaderName: 'Nama',
+    colHeaderValue: 'Nilai',
+    copyUrl: 'Salin URL',
+    copyRaw: 'Salin asli',
+    copyAll: 'Salin semua',
+    copied: 'Disalin',
+    close: 'Tutup',
+    parseErrorTitle: 'Gagal parsing',
+    warningsTitle: 'Peringatan',
+    kindText: 'Teks',
+  },
+
 };
 
 export default messages;

@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'قيد التشغيل',
     format: 'تنسيق',
     minify: 'تصغير',
+    decode: 'فك التشفير',
     copy: 'نسخ',
     clear: 'مسح',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'افتح صفحة التنزيل',
     nativeShare: 'مشاركة عبر…',
   },
+  decode: {
+    title: 'فاكّ تشفير curl',
+    empty: 'لا توجد معاملات قابلة للفك في هذا الأمر',
+    sectionQuery: 'معاملات URL',
+    sectionHeaders: 'الرؤوس',
+    sectionCookies: 'الكوكيز',
+    sectionForm: 'حقول النموذج (-F)',
+    sectionData: 'جسم الطلب',
+    colKey: 'المفتاح',
+    colValue: 'القيمة',
+    colRaw: 'الأصلي',
+    colDecoded: 'بعد الفك',
+    colHeaderName: 'الاسم',
+    colHeaderValue: 'القيمة',
+    copyUrl: 'نسخ الرابط',
+    copyRaw: 'نسخ الأصلي',
+    copyAll: 'نسخ الكل',
+    copied: 'تم النسخ',
+    close: 'إغلاق',
+    parseErrorTitle: 'فشل التحليل',
+    warningsTitle: 'تحذيرات',
+    kindText: 'نص',
+  },
+
 };
 
 export default messages;

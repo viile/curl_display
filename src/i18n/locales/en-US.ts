@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Running',
     format: 'Format',
     minify: 'Minify',
+    decode: 'Decode',
     copy: 'Copy',
     clear: 'Clear',
     placeholder:
@@ -127,6 +128,30 @@ const messages: Messages = {
     qrHint: 'Scan to download on mobile',
     openLink: 'Open download page',
     nativeShare: 'Share via…',
+  },
+
+  decode: {
+    title: 'curl decoder',
+    empty: 'No decodable parameters in this curl command',
+    sectionQuery: 'URL query parameters',
+    sectionHeaders: 'Headers',
+    sectionCookies: 'Cookies',
+    sectionForm: 'Form fields (-F)',
+    sectionData: 'Request body',
+    colKey: 'Key',
+    colValue: 'Value',
+    colRaw: 'Raw',
+    colDecoded: 'Decoded',
+    colHeaderName: 'Name',
+    colHeaderValue: 'Value',
+    copyUrl: 'Copy URL',
+    copyRaw: 'Copy raw',
+    copyAll: 'Copy all',
+    copied: 'Copied',
+    close: 'Close',
+    parseErrorTitle: 'Parse failed',
+    warningsTitle: 'Warnings',
+    kindText: 'Text',
   },
 };
 

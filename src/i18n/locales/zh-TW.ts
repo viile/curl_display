@@ -20,6 +20,7 @@ const messages: Messages = {
     running: '執行中',
     format: '格式化',
     minify: '壓縮',
+    decode: '解碼',
     copy: '複製',
     clear: '清空',
     placeholder:
@@ -126,6 +127,30 @@ const messages: Messages = {
     openLink: '開啟下載頁',
     nativeShare: '透過應用程式分享…',
   },
+  decode: {
+    title: 'curl 解碼檢視',
+    empty: '此 curl 命令沒有可解碼的參數',
+    sectionQuery: 'URL 查詢參數',
+    sectionHeaders: '請求標頭',
+    sectionCookies: 'Cookie',
+    sectionForm: '表單欄位 (-F)',
+    sectionData: '請求主體',
+    colKey: '參數名',
+    colValue: '值',
+    colRaw: '原始值',
+    colDecoded: '解碼後',
+    colHeaderName: '名稱',
+    colHeaderValue: '值',
+    copyUrl: '複製 URL',
+    copyRaw: '複製原文',
+    copyAll: '複製全部',
+    copied: '已複製',
+    close: '關閉',
+    parseErrorTitle: '解析失敗',
+    warningsTitle: '解析提示',
+    kindText: '純文字',
+  },
+
 };
 
 export default messages;

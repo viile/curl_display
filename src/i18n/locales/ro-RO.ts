@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'În execuție',
     format: 'Formatează',
     minify: 'Compactează',
+    decode: 'Decodifică',
     copy: 'Copiază',
     clear: 'Șterge',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'Deschide pagina de descărcare',
     nativeShare: 'Distribuie prin…',
   },
+  decode: {
+    title: 'Decodor curl',
+    empty: 'Nu există parametri decodificabili în această comandă',
+    sectionQuery: 'Parametri interogare URL',
+    sectionHeaders: 'Antete',
+    sectionCookies: 'Cookie-uri',
+    sectionForm: 'Câmpuri formular (-F)',
+    sectionData: 'Corpul cererii',
+    colKey: 'Cheie',
+    colValue: 'Valoare',
+    colRaw: 'Original',
+    colDecoded: 'Decodificat',
+    colHeaderName: 'Nume',
+    colHeaderValue: 'Valoare',
+    copyUrl: 'Copiază URL',
+    copyRaw: 'Copiază original',
+    copyAll: 'Copiază tot',
+    copied: 'Copiat',
+    close: 'Închide',
+    parseErrorTitle: 'Analiză eșuată',
+    warningsTitle: 'Avertismente',
+    kindText: 'Text',
+  },
+
 };
 
 export default messages;

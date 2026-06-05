@@ -20,6 +20,7 @@ const messages: Messages = {
     running: '실행 중',
     format: '포맷',
     minify: '압축',
+    decode: '디코딩',
     copy: '복사',
     clear: '지우기',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: '다운로드 페이지 열기',
     nativeShare: '앱으로 공유…',
   },
+  decode: {
+    title: 'curl 디코더',
+    empty: '디코딩할 매개변수가 없습니다',
+    sectionQuery: 'URL 쿼리 매개변수',
+    sectionHeaders: '헤더',
+    sectionCookies: '쿠키',
+    sectionForm: '폼 필드 (-F)',
+    sectionData: '요청 본문',
+    colKey: '키',
+    colValue: '값',
+    colRaw: '원본',
+    colDecoded: '디코딩됨',
+    colHeaderName: '이름',
+    colHeaderValue: '값',
+    copyUrl: 'URL 복사',
+    copyRaw: '원본 복사',
+    copyAll: '전체 복사',
+    copied: '복사됨',
+    close: '닫기',
+    parseErrorTitle: '파싱 실패',
+    warningsTitle: '경고',
+    kindText: '텍스트',
+  },
+
 };
 
 export default messages;

@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Çalışıyor',
     format: 'Biçimlendir',
     minify: 'Küçült',
+    decode: 'Çöz',
     copy: 'Kopyala',
     clear: 'Temizle',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'İndirme sayfasını aç',
     nativeShare: 'Şununla paylaş…',
   },
+  decode: {
+    title: 'curl çözücü',
+    empty: 'Bu komutta çözülebilir parametre yok',
+    sectionQuery: 'URL sorgu parametreleri',
+    sectionHeaders: 'Başlıklar',
+    sectionCookies: 'Çerezler',
+    sectionForm: 'Form alanları (-F)',
+    sectionData: 'İstek gövdesi',
+    colKey: 'Anahtar',
+    colValue: 'Değer',
+    colRaw: 'Ham',
+    colDecoded: 'Çözülmüş',
+    colHeaderName: 'Ad',
+    colHeaderValue: 'Değer',
+    copyUrl: 'URL\'yi kopyala',
+    copyRaw: 'Ham veriyi kopyala',
+    copyAll: 'Tümünü kopyala',
+    copied: 'Kopyalandı',
+    close: 'Kapat',
+    parseErrorTitle: 'Ayrıştırma başarısız',
+    warningsTitle: 'Uyarılar',
+    kindText: 'Metin',
+  },
+
 };
 
 export default messages;

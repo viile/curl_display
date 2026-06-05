@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'กำลังรัน',
     format: 'จัดรูปแบบ',
     minify: 'ย่อ',
+    decode: 'ถอดรหัส',
     copy: 'คัดลอก',
     clear: 'ล้าง',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'เปิดหน้าดาวน์โหลด',
     nativeShare: 'แชร์ผ่าน…',
   },
+  decode: {
+    title: 'ตัวถอดรหัส curl',
+    empty: 'ไม่มีพารามิเตอร์ที่ถอดรหัสได้ในคำสั่งนี้',
+    sectionQuery: 'พารามิเตอร์ URL',
+    sectionHeaders: 'ส่วนหัว',
+    sectionCookies: 'คุกกี้',
+    sectionForm: 'ฟิลด์ฟอร์ม (-F)',
+    sectionData: 'เนื้อหาคำขอ',
+    colKey: 'คีย์',
+    colValue: 'ค่า',
+    colRaw: 'ดิบ',
+    colDecoded: 'ถอดรหัสแล้ว',
+    colHeaderName: 'ชื่อ',
+    colHeaderValue: 'ค่า',
+    copyUrl: 'คัดลอก URL',
+    copyRaw: 'คัดลอกต้นฉบับ',
+    copyAll: 'คัดลอกทั้งหมด',
+    copied: 'คัดลอกแล้ว',
+    close: 'ปิด',
+    parseErrorTitle: 'การวิเคราะห์ล้มเหลว',
+    warningsTitle: 'คำเตือน',
+    kindText: 'ข้อความ',
+  },
+
 };
 
 export default messages;

@@ -2,10 +2,11 @@
 import { computed, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
-import { CaretRight, Brush, Delete, DocumentCopy, Loading } from '@element-plus/icons-vue';
+import { CaretRight, Brush, Delete, DocumentCopy, Loading, Key } from '@element-plus/icons-vue';
 import { formatCurl, minifyCurl } from '../utils/curl';
 import HistoryMenu from './HistoryMenu.vue';
 import EngineSwitcher from './EngineSwitcher.vue';
+import CurlDecoder from './CurlDecoder.vue';
 import type { HistoryItem } from '../composables/useHistory';
 
 const props = defineProps<{
@@ -22,6 +23,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const decoderVisible = ref(false);
 
 const value = computed({
   get: () => props.modelValue,
@@ -53,6 +55,14 @@ function handleMinify() {
   } catch (e: any) {
     ElMessage.error(t('messages.minifyFailed', { msg: e?.message || e }));
   }
+}
+
+function handleDecode() {
+  if (!value.value.trim()) {
+    ElMessage.warning(t('messages.emptyCommand'));
+    return;
+  }
+  decoderVisible.value = true;
 }
 
 async function handleCopy() {
@@ -113,6 +123,9 @@ function handleKeyDown(e: KeyboardEvent) {
         <el-button :icon="DocumentCopy" plain @click="handleMinify">
           {{ t('editor.minify') }}
         </el-button>
+        <el-button :icon="Key" plain @click="handleDecode">
+          {{ t('editor.decode') }}
+        </el-button>
         <HistoryMenu
           :current-command="value"
           @pick="(item) => emit('pick-history', item)"
@@ -154,6 +167,8 @@ function handleKeyDown(e: KeyboardEvent) {
         t('editor.statusHint', { run: kbdRun, format: kbdFormat })
       }}</span>
     </div>
+
+    <CurlDecoder v-model="decoderVisible" :command="value" />
   </div>
 </template>
 

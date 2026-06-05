@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Probíhá',
     format: 'Formátovat',
     minify: 'Minimalizovat',
+    decode: 'Dekódovat',
     copy: 'Kopírovat',
     clear: 'Vymazat',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'Otevřít stránku stažení',
     nativeShare: 'Sdílet přes…',
   },
+  decode: {
+    title: 'Dekodér curl',
+    empty: 'V tomto příkazu nejsou žádné dekódovatelné parametry',
+    sectionQuery: 'Parametry dotazu URL',
+    sectionHeaders: 'Hlavičky',
+    sectionCookies: 'Cookies',
+    sectionForm: 'Pole formuláře (-F)',
+    sectionData: 'Tělo požadavku',
+    colKey: 'Klíč',
+    colValue: 'Hodnota',
+    colRaw: 'Původní',
+    colDecoded: 'Dekódováno',
+    colHeaderName: 'Název',
+    colHeaderValue: 'Hodnota',
+    copyUrl: 'Kopírovat URL',
+    copyRaw: 'Kopírovat původní',
+    copyAll: 'Kopírovat vše',
+    copied: 'Zkopírováno',
+    close: 'Zavřít',
+    parseErrorTitle: 'Analýza selhala',
+    warningsTitle: 'Upozornění',
+    kindText: 'Text',
+  },
+
 };
 
 export default messages;

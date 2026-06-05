@@ -20,6 +20,7 @@ const messages: Messages = {
     running: '実行中',
     format: 'フォーマット',
     minify: '圧縮',
+    decode: 'デコード',
     copy: 'コピー',
     clear: 'クリア',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'ダウンロードページを開く',
     nativeShare: 'アプリで共有…',
   },
+  decode: {
+    title: 'curl デコードビュー',
+    empty: 'デコード可能なパラメータがありません',
+    sectionQuery: 'URL クエリパラメータ',
+    sectionHeaders: 'ヘッダー',
+    sectionCookies: 'Cookie',
+    sectionForm: 'フォーム項目 (-F)',
+    sectionData: 'リクエストボディ',
+    colKey: 'キー',
+    colValue: '値',
+    colRaw: '生データ',
+    colDecoded: 'デコード後',
+    colHeaderName: '名前',
+    colHeaderValue: '値',
+    copyUrl: 'URL をコピー',
+    copyRaw: '原文をコピー',
+    copyAll: 'すべてコピー',
+    copied: 'コピーしました',
+    close: '閉じる',
+    parseErrorTitle: '解析失敗',
+    warningsTitle: '警告',
+    kindText: 'テキスト',
+  },
+
 };
 
 export default messages;

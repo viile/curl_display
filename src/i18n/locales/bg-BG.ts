@@ -20,6 +20,7 @@ const messages: Messages = {
     running: 'Изпълнение',
     format: 'Форматирай',
     minify: 'Свий',
+    decode: 'Декодиране',
     copy: 'Копирай',
     clear: 'Изчисти',
     placeholder:
@@ -128,6 +129,30 @@ const messages: Messages = {
     openLink: 'Отвори страницата за изтегляне',
     nativeShare: 'Сподели чрез…',
   },
+  decode: {
+    title: 'curl декодер',
+    empty: 'В тази команда няма параметри за декодиране',
+    sectionQuery: 'URL заявка параметри',
+    sectionHeaders: 'Заглавки',
+    sectionCookies: 'Бисквитки',
+    sectionForm: 'Полета на формуляр (-F)',
+    sectionData: 'Тяло на заявката',
+    colKey: 'Ключ',
+    colValue: 'Стойност',
+    colRaw: 'Оригинал',
+    colDecoded: 'Декодирано',
+    colHeaderName: 'Име',
+    colHeaderValue: 'Стойност',
+    copyUrl: 'Копирай URL',
+    copyRaw: 'Копирай оригинал',
+    copyAll: 'Копирай всичко',
+    copied: 'Копирано',
+    close: 'Затвори',
+    parseErrorTitle: 'Грешка при анализ',
+    warningsTitle: 'Предупреждения',
+    kindText: 'Текст',
+  },
+
 };
 
 export default messages;
