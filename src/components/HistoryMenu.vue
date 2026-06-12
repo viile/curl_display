@@ -2,7 +2,15 @@
 import { computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Clock, Delete, Search, Close, Star, StarFilled } from '@element-plus/icons-vue';
+import {
+  Clock,
+  Delete,
+  Search,
+  Close,
+  Star,
+  StarFilled,
+  ArrowRight,
+} from '@element-plus/icons-vue';
 import { useHistory, type HistoryItem } from '../composables/useHistory';
 import { useConsent } from '../composables/useConsent';
 import { extractCurlSummary } from '../utils/curl';
@@ -25,24 +33,22 @@ const visible = ref(false);
 const keyword = ref('');
 const searchInput = ref<HTMLInputElement | null>(null);
 
-const filtered = computed(() => {
-  const q = keyword.value.trim().toLowerCase();
-  const base = q
-    ? items.value.filter((it) => {
-        const s = extractCurlSummary(it.command);
-        return (
-          it.command.toLowerCase().includes(q) ||
-          s.url.toLowerCase().includes(q) ||
-          s.method.toLowerCase().includes(q)
-        );
-      })
-    : items.value;
-  // 收藏置顶；组内保持原顺序（items.value 本身已是 timestamp 倒序），
-  // 用稳定的 Array#sort 即可。Node/V8 >= ES2019 都保证 sort 稳定。
-  return [...base].sort(
-    (a, b) => Number(!!b.favorite) - Number(!!a.favorite)
-  );
-});
+/** 用户主动展开过的分组（按 path key 记录），search 模式下会无条件展开所有匹配组 */
+const expandedKeys = ref<Set<string>>(new Set());
+
+interface HistoryGroup {
+  /** 分组键：纯 pathname（去掉 query/hash）。无法解析出 URL 的退化为按 item.id 独立分组 */
+  key: string;
+  /** 顶层展示用的 path 字符串；无 URL 的退化分组为空 */
+  pathDisplay: string;
+  /** 组内成员，按 favorite 优先 + 时间倒序 */
+  items: HistoryItem[];
+  hasFavorite: boolean;
+  /** 组内是否包含当前编辑器命中的 activeId */
+  hasActive: boolean;
+  /** 组内最新 timestamp，用于排序 */
+  latestTimestamp: number;
+}
 
 const normalizedCurrent = computed(() => props.currentCommand.trim());
 
@@ -56,11 +62,91 @@ const activeId = computed<string | null>(() => {
   return items.value.find((i) => i.command.trim() === n)?.id ?? null;
 });
 
+const groups = computed<HistoryGroup[]>(() => {
+  const q = keyword.value.trim().toLowerCase();
+  const base = q
+    ? items.value.filter((it) => {
+        const s = extractCurlSummary(it.command);
+        return (
+          it.command.toLowerCase().includes(q) ||
+          s.url.toLowerCase().includes(q) ||
+          s.method.toLowerCase().includes(q)
+        );
+      })
+    : items.value;
+
+  // 同一 pathname 的多条记录收拢到一组；解析不到 URL 的退化为单条独立组，
+  // 避免把所有 "(无 URL)" 的记录混在一起、导致命令彼此盖掉。
+  const map = new Map<string, HistoryItem[]>();
+  for (const item of base) {
+    const s = extractCurlSummary(item.command);
+    const path = urlPathname(s.url);
+    const key = path || `__no_url__:${item.id}`;
+    const arr = map.get(key);
+    if (arr) arr.push(item);
+    else map.set(key, [item]);
+  }
+
+  const list: HistoryGroup[] = [];
+  for (const [key, raw] of map) {
+    // items.value 已经是 timestamp 倒序，所以 raw 也是。这里再用稳定排序把收藏顶起来。
+    const sorted = [...raw].sort(
+      (a, b) => Number(!!b.favorite) - Number(!!a.favorite)
+    );
+    const path = key.startsWith('__no_url__:') ? '' : key;
+    list.push({
+      key,
+      pathDisplay: path,
+      items: sorted,
+      hasFavorite: sorted.some((i) => i.favorite),
+      hasActive: activeId.value
+        ? sorted.some((i) => i.id === activeId.value)
+        : false,
+      latestTimestamp: sorted.reduce((m, i) => Math.max(m, i.timestamp), 0),
+    });
+  }
+
+  // 组级排序：含收藏的优先、然后按最新一次执行时间倒序
+  list.sort((a, b) => {
+    if (a.hasFavorite !== b.hasFavorite) {
+      return Number(b.hasFavorite) - Number(a.hasFavorite);
+    }
+    return b.latestTimestamp - a.latestTimestamp;
+  });
+
+  return list;
+});
+
+/** 当前可见的条目总数（过滤后），用于 footer "X / Y" 展示 */
+const visibleCount = computed(() =>
+  groups.value.reduce((n, g) => n + g.items.length, 0)
+);
+
+/**
+ * 是否展开某个分组：
+ * - 搜索态：全部展开，方便看到匹配项
+ * - 默认：尊重用户的 expandedKeys
+ *
+ * 注意：单条目分组不会进入这条逻辑（模板里直接渲染为普通行）。
+ */
+function isExpanded(group: HistoryGroup): boolean {
+  if (keyword.value.trim().length > 0) return true;
+  return expandedKeys.value.has(group.key);
+}
+
+function toggleExpanded(group: HistoryGroup) {
+  const next = new Set(expandedKeys.value);
+  if (next.has(group.key)) next.delete(group.key);
+  else next.add(group.key);
+  expandedKeys.value = next;
+}
+
 watch(visible, (v) => {
   if (v) {
     nextTick(() => searchInput.value?.focus());
   } else {
     keyword.value = '';
+    expandedKeys.value = new Set();
   }
 });
 
@@ -101,6 +187,22 @@ function urlPath(url: string): string {
     const m = url.match(/^[a-zA-Z][\w+.-]*:\/\/[^/]*(\/.*)?$/);
     if (m) return m[1] || '/';
     return url;
+  }
+}
+
+/**
+ * 仅提取 URL 的 pathname（不含 query/hash），用作分组键。
+ * 这样 `/api/users?id=1` 和 `/api/users?id=2` 会被收拢到 `/api/users` 这一组里。
+ */
+function urlPathname(url: string): string {
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    return u.pathname || '/';
+  } catch {
+    const m = url.match(/^[a-zA-Z][\w+.-]*:\/\/[^/]*(\/[^?#]*)?/);
+    if (m) return m[1] || '/';
+    return url.split(/[?#]/)[0] || '';
   }
 }
 
@@ -251,77 +353,181 @@ function handleEnableHistory() {
         </div>
 
         <div v-if="!items.length" class="empty-tip">{{ t('history.empty') }}</div>
-        <div v-else-if="!filtered.length" class="empty-tip">{{ t('history.noMatch') }}</div>
+        <div v-else-if="!groups.length" class="empty-tip">{{ t('history.noMatch') }}</div>
 
         <div v-else class="history-list">
-          <button
-            v-for="item in filtered"
-            :key="item.id"
-            type="button"
-            class="history-item"
-            :class="{ active: item.id === activeId, 'is-fav': item.favorite }"
-            @click="handlePick(item)"
-          >
-            <div class="row-top">
-              <span
-                class="method"
-                :class="`method-${methodTone(summarize(item.command).method)}`"
-              >
-                {{ summarize(item.command).method || 'GET' }}
-              </span>
-              <span
-                v-if="item.result?.statusCode"
-                class="status-pill"
-                :class="`tone-${statusTone(item.result.statusCode)}`"
-              >
-                {{ item.result.statusCode }}
-              </span>
-              <span v-else-if="item.result?.error" class="status-pill tone-err">
-                ERR
-              </span>
-              <span class="url-text" :title="summarize(item.command).url">
-                {{ urlPath(summarize(item.command).url) || t('history.untitled') }}
-              </span>
+          <template v-for="group in groups" :key="group.key">
+            <!-- 单条目组：保持旧的扁平行 UI，直接 pick -->
+            <button
+              v-if="group.items.length === 1"
+              type="button"
+              class="history-item"
+              :class="{
+                active: group.items[0].id === activeId,
+                'is-fav': group.items[0].favorite,
+              }"
+              @click="handlePick(group.items[0])"
+            >
+              <div class="row-top">
+                <span
+                  class="method"
+                  :class="`method-${methodTone(summarize(group.items[0].command).method)}`"
+                >
+                  {{ summarize(group.items[0].command).method || 'GET' }}
+                </span>
+                <span
+                  v-if="group.items[0].result?.statusCode"
+                  class="status-pill"
+                  :class="`tone-${statusTone(group.items[0].result.statusCode)}`"
+                >
+                  {{ group.items[0].result.statusCode }}
+                </span>
+                <span v-else-if="group.items[0].result?.error" class="status-pill tone-err">
+                  ERR
+                </span>
+                <span class="url-text" :title="summarize(group.items[0].command).url">
+                  {{ urlPath(summarize(group.items[0].command).url) || t('history.untitled') }}
+                </span>
+                <button
+                  type="button"
+                  class="fav-btn"
+                  :class="{ 'is-fav': group.items[0].favorite }"
+                  :title="group.items[0].favorite ? t('history.unfavorite') : t('history.favorite')"
+                  :aria-label="group.items[0].favorite ? t('history.unfavorite') : t('history.favorite')"
+                  :aria-pressed="!!group.items[0].favorite"
+                  @click="handleToggleFavorite(group.items[0], $event)"
+                >
+                  <el-icon>
+                    <StarFilled v-if="group.items[0].favorite" />
+                    <Star v-else />
+                  </el-icon>
+                </button>
+                <button
+                  type="button"
+                  class="del-btn"
+                  :title="t('history.remove')"
+                  @click="handleRemove(group.items[0], $event)"
+                >
+                  <el-icon><Close /></el-icon>
+                </button>
+              </div>
+              <div class="row-bot">
+                <time
+                  class="time"
+                  :datetime="new Date(group.items[0].timestamp).toISOString()"
+                  :title="formatExecTimeFull(group.items[0].timestamp)"
+                >
+                  {{ formatExecTime(group.items[0].timestamp) }}
+                </time>
+                <span v-if="group.items[0].result?.timeMs != null" class="dot">·</span>
+                <span v-if="group.items[0].result?.timeMs != null">
+                  {{ group.items[0].result.timeMs }} ms
+                </span>
+              </div>
+            </button>
+
+            <!-- 多条目组：渲染为可展开的"二级菜单"父项 -->
+            <template v-else>
               <button
                 type="button"
-                class="fav-btn"
-                :class="{ 'is-fav': item.favorite }"
-                :title="item.favorite ? t('history.unfavorite') : t('history.favorite')"
-                :aria-label="item.favorite ? t('history.unfavorite') : t('history.favorite')"
-                :aria-pressed="!!item.favorite"
-                @click="handleToggleFavorite(item, $event)"
+                class="history-item group-header"
+                :class="{
+                  'is-fav': group.hasFavorite,
+                  'has-active-child': group.hasActive,
+                  'is-expanded': isExpanded(group),
+                }"
+                :aria-expanded="isExpanded(group)"
+                @click="toggleExpanded(group)"
               >
-                <el-icon>
-                  <StarFilled v-if="item.favorite" />
-                  <Star v-else />
-                </el-icon>
+                <div class="row-top">
+                  <span
+                    class="caret"
+                    :class="{ open: isExpanded(group) }"
+                    aria-hidden="true"
+                  >
+                    <el-icon><ArrowRight /></el-icon>
+                  </span>
+                  <span class="url-text path-text" :title="group.pathDisplay">
+                    {{ group.pathDisplay || t('history.untitled') }}
+                  </span>
+                  <span class="group-count">{{ group.items.length }}</span>
+                </div>
               </button>
-              <button
-                type="button"
-                class="del-btn"
-                :title="t('history.remove')"
-                @click="handleRemove(item, $event)"
-              >
-                <el-icon><Close /></el-icon>
-              </button>
-            </div>
-            <div class="row-bot">
-              <time
-                class="time"
-                :datetime="new Date(item.timestamp).toISOString()"
-                :title="formatExecTimeFull(item.timestamp)"
-              >
-                {{ formatExecTime(item.timestamp) }}
-              </time>
-              <span v-if="item.result?.timeMs != null" class="dot">·</span>
-              <span v-if="item.result?.timeMs != null">{{ item.result.timeMs }} ms</span>
-            </div>
-          </button>
+
+              <div v-if="isExpanded(group)" class="group-children">
+                <button
+                  v-for="item in group.items"
+                  :key="item.id"
+                  type="button"
+                  class="history-item child-item"
+                  :class="{ active: item.id === activeId, 'is-fav': item.favorite }"
+                  @click="handlePick(item)"
+                >
+                  <div class="row-top">
+                    <span
+                      class="method"
+                      :class="`method-${methodTone(summarize(item.command).method)}`"
+                    >
+                      {{ summarize(item.command).method || 'GET' }}
+                    </span>
+                    <span
+                      v-if="item.result?.statusCode"
+                      class="status-pill"
+                      :class="`tone-${statusTone(item.result.statusCode)}`"
+                    >
+                      {{ item.result.statusCode }}
+                    </span>
+                    <span v-else-if="item.result?.error" class="status-pill tone-err">
+                      ERR
+                    </span>
+                    <span class="url-text" :title="summarize(item.command).url">
+                      {{ urlPath(summarize(item.command).url) || t('history.untitled') }}
+                    </span>
+                    <button
+                      type="button"
+                      class="fav-btn"
+                      :class="{ 'is-fav': item.favorite }"
+                      :title="item.favorite ? t('history.unfavorite') : t('history.favorite')"
+                      :aria-label="item.favorite ? t('history.unfavorite') : t('history.favorite')"
+                      :aria-pressed="!!item.favorite"
+                      @click="handleToggleFavorite(item, $event)"
+                    >
+                      <el-icon>
+                        <StarFilled v-if="item.favorite" />
+                        <Star v-else />
+                      </el-icon>
+                    </button>
+                    <button
+                      type="button"
+                      class="del-btn"
+                      :title="t('history.remove')"
+                      @click="handleRemove(item, $event)"
+                    >
+                      <el-icon><Close /></el-icon>
+                    </button>
+                  </div>
+                  <div class="row-bot">
+                    <time
+                      class="time"
+                      :datetime="new Date(item.timestamp).toISOString()"
+                      :title="formatExecTimeFull(item.timestamp)"
+                    >
+                      {{ formatExecTime(item.timestamp) }}
+                    </time>
+                    <span v-if="item.result?.timeMs != null" class="dot">·</span>
+                    <span v-if="item.result?.timeMs != null">
+                      {{ item.result.timeMs }} ms
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </template>
+          </template>
         </div>
 
         <div v-if="items.length" class="history-footer">
           <span class="muted">
-            {{ filtered.length }} / {{ items.length }}
+            {{ visibleCount }} / {{ items.length }}
             <span v-if="favoriteCount" class="fav-count">
               <el-icon><StarFilled /></el-icon>
               {{ favoriteCount }}
@@ -450,6 +656,72 @@ function handleEnableHistory() {
   width: 3px;
   border-radius: 0 2px 2px 0;
   background: linear-gradient(180deg, #f5b94a, #e69a1a);
+}
+
+/* 分组父项：只显示 path 与计数，单独的视觉风格 */
+.group-header {
+  padding: 6px 8px;
+}
+.group-header.has-active-child {
+  background: var(--hover);
+}
+.group-header .row-top {
+  align-items: center;
+}
+.group-header .path-text {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.caret.open {
+  transform: rotate(90deg);
+}
+
+.group-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  background: var(--kbd-bg);
+  color: var(--text-dim);
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+.group-header.has-active-child .group-count {
+  background: var(--hover-strong);
+  color: var(--accent);
+}
+
+/* 二级菜单：子项列表沿用 history-item 样式，缩进并配上视觉引导线 */
+.group-children {
+  position: relative;
+  margin: 0 0 4px 6px;
+  padding-left: 10px;
+  border-left: 1px dashed var(--border);
+}
+.group-children .history-item {
+  padding: 6px 8px;
+  margin-bottom: 2px;
+}
+.group-children .history-item:last-child {
+  margin-bottom: 4px;
 }
 
 .row-top {
