@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Jalankan',
     running: 'Berjalan',
+    stop: 'Hentikan',
     format: 'Format',
     minify: 'Perkecil',
     decode: 'Dekode',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Body respons disalin',
     copyFailed: 'Penyalinan gagal, salin secara manual',
     requestFailed: 'Permintaan gagal: {msg}',
+    requestAborted: 'Permintaan dihentikan',
   },
 
   result: {
     emptyTitle: 'Belum ada hasil',
     emptyHint: 'Edit perintah curl di kiri, lalu klik «Jalankan» atau tekan {hotkey}',
     running: 'Berjalan...',
+    runningHint: 'Klik «Hentikan» atau tekan Esc untuk membatalkan permintaan',
     metaTime: 'Waktu',
     metaSize: 'Ukuran',
     metaType: 'Tipe',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Hapus dari favorit',
     confirmClearKeepFav:
       'Hapus semua riwayat non-favorit? {count} favorit akan dipertahankan.',
+  },
+
+  favorites: {
+    title: 'Favorit',
+    empty: 'Belum ada favorit — ketuk ☆ pada item riwayat untuk menambahkan',
   },
 
   theme: {

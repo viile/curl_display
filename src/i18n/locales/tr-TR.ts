@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Çalıştır',
     running: 'Çalışıyor',
+    stop: 'Durdur',
     format: 'Biçimlendir',
     minify: 'Küçült',
     decode: 'Çöz',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Yanıt gövdesi kopyalandı',
     copyFailed: 'Kopyalanamadı, lütfen elle kopyalayın',
     requestFailed: 'İstek başarısız: {msg}',
+    requestAborted: 'İstek durduruldu',
   },
 
   result: {
     emptyTitle: 'Henüz sonuç yok',
     emptyHint: 'Soldaki curl komutunu düzenleyin, sonra «Çalıştır»a tıklayın veya {hotkey} tuşuna basın',
     running: 'Çalışıyor...',
+    runningHint: 'İsteği iptal etmek için "Durdur"a tıklayın veya Esc tuşuna basın',
     metaTime: 'Süre',
     metaSize: 'Boyut',
     metaType: 'Tür',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Favorilerden çıkar',
     confirmClearKeepFav:
       'Favori olmayan tüm geçmiş silinsin mi? {count} favori öğe korunacaktır.',
+  },
+
+  favorites: {
+    title: 'Favoriler',
+    empty: 'Henüz favori yok — eklemek için bir geçmiş öğesindeki ☆ simgesine dokunun',
   },
 
   theme: {

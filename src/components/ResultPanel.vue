@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import {
@@ -18,7 +18,7 @@ import type { ExecuteResult } from '../api/execute';
 import { DESKTOP_DOWNLOAD_URL } from '../config/links';
 import JsonTreeView from './JsonTreeView.vue';
 import JsonMindMap from './JsonMindMap.vue';
-import { searchJson } from '../utils/jsonSearch';
+import { findTextMatches, renderTextWithHighlights, searchJson } from '../utils/jsonSearch';
 import { openExternal } from '../utils/openExternal';
 
 type BodyFormat = 'text' | 'tree' | 'mind';
@@ -159,22 +159,83 @@ const parsedBody = computed<unknown>(() => {
 
 const canShowStructured = computed(() => parsedBody.value !== null);
 
-const searchActive = computed(
-  () => activeTab.value === 'body' && bodyFormat.value === 'tree' && canShowStructured.value
-);
+/** 当前激活的"展示介质"——驱动搜索逻辑分支 */
+type SearchScope = 'tree' | 'mind' | 'text-body' | 'text-raw' | 'none';
 
-const searchResult = computed(() => {
-  if (!searchActive.value || !searchQuery.value.trim()) {
+const searchScope = computed<SearchScope>(() => {
+  if (!props.result?.body) return 'none';
+  if (activeTab.value === 'raw') return 'text-raw';
+  if (activeTab.value !== 'body') return 'none';
+  if (bodyFormat.value === 'tree' && canShowStructured.value) return 'tree';
+  if (bodyFormat.value === 'mind' && canShowStructured.value) return 'mind';
+  // 包括 bodyFormat === 'text'，以及非 JSON 时强制回落的 pre 渲染
+  return 'text-body';
+});
+
+/** 搜索条是否显示：body / raw 任一展示模式 + 有 body 即显示 */
+const searchActive = computed(() => searchScope.value !== 'none');
+
+/** 文本模式下用于搜索的原文：body 模式用 prettyBody，raw 模式用原始 body */
+const searchableText = computed(() => {
+  if (searchScope.value === 'text-body') return prettyBody.value;
+  if (searchScope.value === 'text-raw') return props.result?.body ?? '';
+  return '';
+});
+
+const treeSearch = computed(() => {
+  if (searchScope.value !== 'tree' || !searchQuery.value.trim()) {
     return { matches: [], expandedPaths: new Set<string>(), truncated: false };
   }
   return searchJson(parsedBody.value, searchQuery.value, { maxMatches: 500 });
 });
 
-const totalMatches = computed(() => searchResult.value.matches.length);
-
-watch([searchQuery, () => bodyFormat.value, () => parsedBody.value], () => {
-  currentMatchIndex.value = 0;
+const textSearch = computed(() => {
+  if (
+    (searchScope.value !== 'text-body' && searchScope.value !== 'text-raw') ||
+    !searchQuery.value.trim()
+  ) {
+    return { matches: [], truncated: false };
+  }
+  return findTextMatches(searchableText.value, searchQuery.value, { maxMatches: 2000 });
 });
+
+/** mind 模式的命中数由 JsonMindMap 通过 @update:total-matches 上报 */
+const mindTotalMatches = ref(0);
+
+const totalMatches = computed(() => {
+  switch (searchScope.value) {
+    case 'tree':
+      return treeSearch.value.matches.length;
+    case 'mind':
+      return mindTotalMatches.value;
+    case 'text-body':
+    case 'text-raw':
+      return textSearch.value.matches.length;
+    default:
+      return 0;
+  }
+});
+
+/** 显示 "X / Y+" 用：tree / text 有截断信号；mind 暂不暴露 */
+const isTruncated = computed(() => {
+  switch (searchScope.value) {
+    case 'tree':
+      return treeSearch.value.truncated;
+    case 'text-body':
+    case 'text-raw':
+      return textSearch.value.truncated;
+    default:
+      return false;
+  }
+});
+
+// 切换 tab / 切换 body 格式 / 数据变化 / query 变化 → currentMatchIndex 复位
+watch(
+  [searchQuery, () => bodyFormat.value, () => activeTab.value, () => parsedBody.value],
+  () => {
+    currentMatchIndex.value = 0;
+  }
+);
 
 const safeCurrentIndex = computed(() => {
   if (!totalMatches.value) return -1;
@@ -185,9 +246,40 @@ const safeCurrentIndex = computed(() => {
   return i;
 });
 
+/** tree 模式专用：当前命中节点的 pathKey */
 const currentMatchPath = computed<string | null>(() => {
-  if (safeCurrentIndex.value < 0) return null;
-  return searchResult.value.matches[safeCurrentIndex.value].pathKey;
+  if (searchScope.value !== 'tree' || safeCurrentIndex.value < 0) return null;
+  return treeSearch.value.matches[safeCurrentIndex.value].pathKey;
+});
+
+/** text 模式下的渲染 HTML（含 <mark> 高亮）——v-html 安全：内部 escape 过 */
+const textHighlightedHtml = computed(() => {
+  if (searchScope.value !== 'text-body' && searchScope.value !== 'text-raw') return '';
+  return renderTextWithHighlights(searchableText.value, searchQuery.value, safeCurrentIndex.value);
+});
+
+/** text-body 模式：未搜索时退回 JSON 语法高亮的 html；搜索期间让位给 mark 高亮（更直观） */
+const bodyHtml = computed(() => {
+  if (searchQuery.value.trim()) return textHighlightedHtml.value;
+  if (isJson.value) return highlightedBody.value;
+  return '';
+});
+
+const isTextLikeRender = computed(
+  () => searchScope.value === 'text-body' || searchScope.value === 'text-raw'
+);
+
+const textBodyRef = ref<HTMLElement | null>(null);
+const rawBodyRef = ref<HTMLElement | null>(null);
+
+/** 当前 match 切换时，把对应 <mark.current-hit> 滚入视口 */
+watch([safeCurrentIndex, textHighlightedHtml], async () => {
+  if (!isTextLikeRender.value || safeCurrentIndex.value < 0) return;
+  await nextTick();
+  const root =
+    searchScope.value === 'text-raw' ? rawBodyRef.value : textBodyRef.value;
+  const el = root?.querySelector('.current-hit') as HTMLElement | null;
+  el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 });
 
 function gotoMatch(delta: number) {
@@ -217,19 +309,36 @@ const headerCount = computed(() =>
 </script>
 
 <template>
-  <div class="result-root">
+  <div class="result-root" :class="{ 'is-loading': loading }">
+    <div v-if="loading" class="progress-bar" aria-hidden="true">
+      <span class="progress-bar-track" />
+    </div>
     <div v-if="!result && !loading" class="empty">
       <div class="empty-icon">⌁</div>
       <div class="empty-title">{{ t('result.emptyTitle') }}</div>
       <div class="empty-sub">{{ t('result.emptyHint', { hotkey: hotkeyRun }) }}</div>
     </div>
 
-    <div v-else-if="loading && !result" class="empty">
-      <el-icon class="is-loading" :size="24"><Loading /></el-icon>
-      <div class="empty-sub" style="margin-top: 10px">{{ t('result.running') }}</div>
+    <div v-else-if="loading && !result" class="empty running-empty">
+      <div class="running-spinner" aria-hidden="true">
+        <el-icon class="is-loading running-spinner-icon" :size="40"><Loading /></el-icon>
+        <span class="running-spinner-ring" />
+      </div>
+      <div class="empty-sub running-text">{{ t('result.running') }}</div>
+      <div class="running-sub">{{ t('result.runningHint') }}</div>
     </div>
 
     <template v-else-if="result">
+      <div v-if="loading" class="result-overlay" role="status" aria-live="polite">
+        <div class="result-overlay-card">
+          <div class="running-spinner">
+            <el-icon class="is-loading running-spinner-icon" :size="36"><Loading /></el-icon>
+            <span class="running-spinner-ring" />
+          </div>
+          <div class="result-overlay-text">{{ t('result.running') }}</div>
+          <div class="result-overlay-sub">{{ t('result.runningHint') }}</div>
+        </div>
+      </div>
       <div class="result-header">
         <div class="status-row">
           <el-tag :type="statusTone" effect="dark" round size="large">
@@ -371,7 +480,7 @@ const headerCount = computed(() =>
         />
         <div v-if="searchQuery.trim()" class="search-meta">
           <span v-if="totalMatches" class="search-count" aria-live="polite">
-            {{ safeCurrentIndex + 1 }} / {{ totalMatches }}{{ searchResult.truncated ? '+' : '' }}
+            {{ safeCurrentIndex + 1 }} / {{ totalMatches }}{{ isTruncated ? '+' : '' }}
           </span>
           <span v-else class="search-count search-count-empty" aria-live="polite">
             {{ t('result.searchEmpty') }}
@@ -406,15 +515,26 @@ const headerCount = computed(() =>
             <JsonTreeView
               :data="parsedBody"
               :query="searchQuery"
-              :force-expanded-paths="searchResult.expandedPaths"
+              :force-expanded-paths="treeSearch.expandedPaths"
               :current-match-path="currentMatchPath"
             />
           </template>
           <template v-else-if="canShowStructured && bodyFormat === 'mind'">
-            <JsonMindMap :data="parsedBody" />
+            <JsonMindMap
+              :data="parsedBody"
+              :query="searchQuery"
+              :current-match-index="safeCurrentIndex"
+              @update:total-matches="mindTotalMatches = $event"
+            />
           </template>
-          <pre v-else-if="isJson" class="code" v-html="highlightedBody" />
-          <pre v-else class="code">{{ prettyBody }}</pre>
+          <!-- text-body: JSON 时未搜索走语法着色；其它情况走 search-aware 渲染 -->
+          <pre
+            v-else-if="bodyHtml"
+            ref="textBodyRef"
+            class="code"
+            v-html="bodyHtml"
+          />
+          <pre v-else ref="textBodyRef" class="code">{{ prettyBody }}</pre>
         </template>
 
         <template v-else-if="activeTab === 'headers'">
@@ -441,7 +561,13 @@ const headerCount = computed(() =>
         </template>
 
         <template v-else>
-          <pre class="code">{{ result.body }}</pre>
+          <pre
+            v-if="searchQuery.trim()"
+            ref="rawBodyRef"
+            class="code"
+            v-html="textHighlightedHtml"
+          />
+          <pre v-else ref="rawBodyRef" class="code">{{ result.body }}</pre>
         </template>
       </div>
     </template>
@@ -450,10 +576,131 @@ const headerCount = computed(() =>
 
 <style scoped>
 .result-root {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   background: var(--panel);
+}
+
+/* 顶部 indeterminate 进度条：始终覆盖在面板最上方 */
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(64, 158, 255, 0.12);
+  overflow: hidden;
+  z-index: 10;
+  pointer-events: none;
+}
+.progress-bar-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent, #409eff),
+    var(--accent-2, #79bbff),
+    transparent
+  );
+  animation: result-progress-slide 1.1s ease-in-out infinite;
+  border-radius: 3px;
+}
+@keyframes result-progress-slide {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* 复用 Element Plus 旋转 icon 类，再叠加自定义环形动画 */
+.running-spinner {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+}
+.running-spinner-icon {
+  color: var(--accent, #409eff);
+  z-index: 1;
+}
+.running-spinner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(64, 158, 255, 0.22);
+  border-top-color: var(--accent, #409eff);
+  animation: spinner-rotate 1s linear infinite;
+}
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.running-empty {
+  gap: 14px;
+}
+.running-text {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+}
+.running-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* 已有结果时再触发执行：半透明遮罩 + 中心卡片，保留底层结果但不可交互 */
+.result-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--panel) 60%, transparent);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: overlay-fade-in 0.15s ease-out;
+}
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.result-overlay-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 32px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  min-width: 200px;
+}
+.result-overlay-text {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+.result-overlay-sub {
+  font-size: 12px;
+  color: var(--text-dim);
 }
 
 .empty {
@@ -837,6 +1084,30 @@ const headerCount = computed(() =>
 }
 .h-value {
   color: var(--text);
+}
+
+/* text / raw 模式下的搜索命中高亮（v-html 渲染，所以要 :deep 才能击穿 scoped） */
+:deep(.search-hit) {
+  background: rgba(255, 213, 79, 0.55);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 600;
+}
+:deep(.current-hit) {
+  background: rgba(245, 185, 74, 0.95);
+  color: #1a1a1a;
+  box-shadow: 0 0 0 2px rgba(245, 185, 74, 0.45);
+  outline: none;
+}
+[data-theme='dark'] :deep(.search-hit) {
+  background: rgba(255, 184, 0, 0.42);
+  color: #ffe9a8;
+}
+[data-theme='dark'] :deep(.current-hit) {
+  background: rgba(245, 185, 74, 0.95);
+  color: #181818;
+  box-shadow: 0 0 0 2px rgba(245, 185, 74, 0.55);
 }
 
 :deep(.tok-key) {

@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'تشغيل',
     running: 'قيد التشغيل',
+    stop: 'إيقاف',
     format: 'تنسيق',
     minify: 'تصغير',
     decode: 'فك التشفير',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'تم نسخ نص الاستجابة',
     copyFailed: 'فشل النسخ، يرجى النسخ يدويًا',
     requestFailed: 'فشل الطلب: {msg}',
+    requestAborted: 'تم إيقاف الطلب',
   },
 
   result: {
     emptyTitle: 'لا توجد نتيجة بعد',
     emptyHint: 'حرّر أمر curl على اليسار، ثم انقر على «تشغيل» أو اضغط {hotkey}',
     running: 'قيد التشغيل...',
+    runningHint: 'انقر على «إيقاف» أو اضغط Esc لإلغاء الطلب',
     metaTime: 'الوقت',
     metaSize: 'الحجم',
     metaType: 'النوع',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'إزالة من المفضلة',
     confirmClearKeepFav:
       'مسح كل السجل غير المفضل؟ سيتم الاحتفاظ بـ {count} عنصرًا مفضلًا.',
+  },
+
+  favorites: {
+    title: 'المفضلة',
+    empty: 'لا توجد مفضلات بعد — اضغط على ☆ في عنصر السجل للإضافة',
   },
 
   theme: {

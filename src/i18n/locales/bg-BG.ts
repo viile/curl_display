@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Изпълни',
     running: 'Изпълнение',
+    stop: 'Спри',
     format: 'Форматирай',
     minify: 'Свий',
     decode: 'Декодиране',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Тялото на отговора е копирано',
     copyFailed: 'Копирането не успя, копирайте ръчно',
     requestFailed: 'Заявката не успя: {msg}',
+    requestAborted: 'Заявката е спряна',
   },
 
   result: {
     emptyTitle: 'Все още няма резултат',
     emptyHint: 'Редактирайте curl командата отляво, после натиснете «Изпълни» или {hotkey}',
     running: 'Изпълнение...',
+    runningHint: 'Натиснете «Спри» или Esc, за да прекъснете заявката',
     metaTime: 'Време',
     metaSize: 'Размер',
     metaType: 'Тип',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Премахни от любими',
     confirmClearKeepFav:
       'Изчистване на цялата нелюбима история? {count} любими записа ще бъдат запазени.',
+  },
+
+  favorites: {
+    title: 'Любими',
+    empty: 'Все още няма любими — натиснете ☆ върху запис от историята',
   },
 
   theme: {

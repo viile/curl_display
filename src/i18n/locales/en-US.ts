@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Run',
     running: 'Running',
+    stop: 'Stop',
     format: 'Format',
     minify: 'Minify',
     decode: 'Decode',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Response body copied',
     copyFailed: 'Copy failed, please copy manually',
     requestFailed: 'Request failed: {msg}',
+    requestAborted: 'Request stopped',
   },
 
   result: {
     emptyTitle: 'No result yet',
     emptyHint: 'Edit a curl command on the left, then click "Run" or press {hotkey}',
     running: 'Running...',
+    runningHint: 'Click "Stop" or press Esc to abort the request',
     metaTime: 'Time',
     metaSize: 'Size',
     metaType: 'Type',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Remove from favorites',
     confirmClearKeepFav:
       'Clear all non-favorite history? {count} favorited item(s) will be kept.',
+  },
+
+  favorites: {
+    title: 'Favorites',
+    empty: 'No favorites yet — tap ☆ on any history item to add',
   },
 
   theme: {

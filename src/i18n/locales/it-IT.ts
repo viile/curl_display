@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Esegui',
     running: 'In esecuzione',
+    stop: 'Ferma',
     format: 'Formatta',
     minify: 'Comprimi',
     decode: 'Decodifica',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Corpo della risposta copiato',
     copyFailed: 'Copia fallita, copia manualmente',
     requestFailed: 'Richiesta fallita: {msg}',
+    requestAborted: 'Richiesta interrotta',
   },
 
   result: {
     emptyTitle: 'Nessun risultato ancora',
     emptyHint: 'Modifica un comando curl a sinistra, poi clicca su «Esegui» o premi {hotkey}',
     running: 'In esecuzione...',
+    runningHint: 'Clicca su «Ferma» o premi Esc per interrompere la richiesta',
     metaTime: 'Tempo',
     metaSize: 'Dimensione',
     metaType: 'Tipo',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Rimuovi dai preferiti',
     confirmClearKeepFav:
       'Cancellare tutta la cronologia non preferita? {count} preferiti saranno conservati.',
+  },
+
+  favorites: {
+    title: 'Preferiti',
+    empty: 'Nessun preferito — tocca ☆ su un elemento della cronologia per aggiungere',
   },
 
   theme: {

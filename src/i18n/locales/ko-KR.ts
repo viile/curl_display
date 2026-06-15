@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: '실행',
     running: '실행 중',
+    stop: '중지',
     format: '포맷',
     minify: '압축',
     decode: '디코딩',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: '응답 본문이 복사됨',
     copyFailed: '복사 실패, 수동으로 복사하세요',
     requestFailed: '요청 실패: {msg}',
+    requestAborted: '요청이 중지되었습니다',
   },
 
   result: {
     emptyTitle: '아직 결과가 없습니다',
     emptyHint: '왼쪽에서 curl 명령을 편집한 후 "실행"을 클릭하거나 {hotkey}을(를) 누르세요',
     running: '실행 중...',
+    runningHint: '"중지"를 클릭하거나 Esc 키를 눌러 요청을 취소하세요',
     metaTime: '시간',
     metaSize: '크기',
     metaType: '유형',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: '즐겨찾기 해제',
     confirmClearKeepFav:
       '즐겨찾기가 아닌 모든 기록을 삭제할까요? 즐겨찾기 {count}개는 유지됩니다.',
+  },
+
+  favorites: {
+    title: '즐겨찾기',
+    empty: '즐겨찾기 없음 — 기록 항목의 ☆를 눌러 추가하세요',
   },
 
   theme: {

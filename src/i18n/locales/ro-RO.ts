@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Execută',
     running: 'În execuție',
+    stop: 'Oprește',
     format: 'Formatează',
     minify: 'Compactează',
     decode: 'Decodifică',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Corpul răspunsului a fost copiat',
     copyFailed: 'Copierea a eșuat, copiază manual',
     requestFailed: 'Cererea a eșuat: {msg}',
+    requestAborted: 'Cerere oprită',
   },
 
   result: {
     emptyTitle: 'Niciun rezultat încă',
     emptyHint: 'Editează o comandă curl în stânga, apoi apasă «Execută» sau {hotkey}',
     running: 'În execuție...',
+    runningHint: 'Apasă «Oprește» sau Esc pentru a anula cererea',
     metaTime: 'Timp',
     metaSize: 'Dimensiune',
     metaType: 'Tip',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Elimină de la favorite',
     confirmClearKeepFav:
       'Ștergi tot istoricul nefavorit? {count} elemente favorite vor fi păstrate.',
+  },
+
+  favorites: {
+    title: 'Favorite',
+    empty: 'Nicio favorită încă — apasă ☆ pe un element din istoric pentru a adăuga',
   },
 
   theme: {

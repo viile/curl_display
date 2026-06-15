@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Spustit',
     running: 'Probíhá',
+    stop: 'Zastavit',
     format: 'Formátovat',
     minify: 'Minimalizovat',
     decode: 'Dekódovat',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Tělo odpovědi zkopírováno',
     copyFailed: 'Kopírování selhalo, zkopírujte ručně',
     requestFailed: 'Požadavek selhal: {msg}',
+    requestAborted: 'Požadavek zastaven',
   },
 
   result: {
     emptyTitle: 'Zatím žádný výsledek',
     emptyHint: 'Upravte příkaz curl vlevo, pak klikněte na «Spustit» nebo stiskněte {hotkey}',
     running: 'Probíhá...',
+    runningHint: 'Klikněte na «Zastavit» nebo stiskněte Esc pro přerušení požadavku',
     metaTime: 'Čas',
     metaSize: 'Velikost',
     metaType: 'Typ',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Odebrat z oblíbených',
     confirmClearKeepFav:
       'Vymazat veškerou historii kromě oblíbených? {count} oblíbených bude zachováno.',
+  },
+
+  favorites: {
+    title: 'Oblíbené',
+    empty: 'Žádné oblíbené — klikněte na ☆ u položky historie pro přidání',
   },
 
   theme: {

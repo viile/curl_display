@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'Chạy',
     running: 'Đang chạy',
+    stop: 'Dừng',
     format: 'Định dạng',
     minify: 'Rút gọn',
     decode: 'Giải mã',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'Đã sao chép nội dung phản hồi',
     copyFailed: 'Sao chép thất bại, vui lòng sao chép thủ công',
     requestFailed: 'Yêu cầu thất bại: {msg}',
+    requestAborted: 'Đã dừng yêu cầu',
   },
 
   result: {
     emptyTitle: 'Chưa có kết quả',
     emptyHint: 'Chỉnh sửa lệnh curl ở bên trái, sau đó nhấp «Chạy» hoặc nhấn {hotkey}',
     running: 'Đang chạy...',
+    runningHint: 'Nhấp "Dừng" hoặc nhấn Esc để hủy yêu cầu',
     metaTime: 'Thời gian',
     metaSize: 'Kích thước',
     metaType: 'Loại',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'Bỏ yêu thích',
     confirmClearKeepFav:
       'Xóa toàn bộ lịch sử chưa yêu thích? {count} mục yêu thích sẽ được giữ lại.',
+  },
+
+  favorites: {
+    title: 'Yêu thích',
+    empty: 'Chưa có mục yêu thích — nhấn ☆ trên một mục lịch sử để thêm',
   },
 
   theme: {

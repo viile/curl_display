@@ -122,6 +122,102 @@ export function searchJson(
   return { matches, expandedPaths, truncated };
 }
 
+/** 文本搜索的单次命中：在原始 text 中 [start, end) 区间 */
+export interface TextMatch {
+  start: number;
+  end: number;
+}
+
+export interface TextSearchResult {
+  matches: TextMatch[];
+  /** 是否被 maxMatches 截断 */
+  truncated: boolean;
+}
+
+const EMPTY_TEXT_RESULT: TextSearchResult = { matches: [], truncated: false };
+
+/**
+ * 在长文本里找全部非重叠匹配位置，忽略大小写。
+ *
+ * 文本/原始响应模式用这个函数定位高亮，配合 `renderTextWithHighlights` 把命中区间包成 <mark>。
+ * 上限避免 query 太通用（如单字符）时数组爆炸；UI 上以 "X+" 形式显示截断。
+ */
+export function findTextMatches(
+  text: string,
+  query: string,
+  options?: { maxMatches?: number }
+): TextSearchResult {
+  const q = query.trim();
+  if (!q || !text) return EMPTY_TEXT_RESULT;
+  const max = options?.maxMatches ?? 5000;
+  const lower = text.toLowerCase();
+  const lowerQ = q.toLowerCase();
+  const out: TextMatch[] = [];
+  let i = 0;
+  let truncated = false;
+  while (i < text.length) {
+    const j = lower.indexOf(lowerQ, i);
+    if (j === -1) break;
+    out.push({ start: j, end: j + q.length });
+    if (out.length >= max) {
+      truncated = true;
+      break;
+    }
+    // 非重叠：跳过本次命中
+    i = j + q.length;
+  }
+  return { matches: out, truncated };
+}
+
+/** HTML 转义，避免 v-html 拼接出 XSS */
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => {
+    switch (c) {
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      default:
+        return '&#39;';
+    }
+  });
+}
+
+/**
+ * 把文本中所有 query 命中包成 <mark class="search-hit">；当前命中额外加 `current-hit` 类，
+ * 方便父组件用 querySelector 找到这个 mark 并 scrollIntoView。
+ *
+ * 与 `splitByQuery` 的区别：本函数直接产出 HTML 字符串（给 v-html 用），适合长文本一次性渲染；
+ * 而 splitByQuery 返回段数组（给 v-for 用），适合短片段。
+ */
+export function renderTextWithHighlights(
+  text: string,
+  query: string,
+  currentIndex: number
+): string {
+  if (!text) return '';
+  if (!query.trim()) return escapeHtml(text);
+  const { matches } = findTextMatches(text, query);
+  if (!matches.length) return escapeHtml(text);
+  let html = '';
+  let pos = 0;
+  for (let i = 0; i < matches.length; i++) {
+    const m = matches[i];
+    if (m.start > pos) html += escapeHtml(text.slice(pos, m.start));
+    const cls = i === currentIndex ? 'search-hit current-hit' : 'search-hit';
+    html += `<mark class="${cls}" data-match-idx="${i}">${escapeHtml(
+      text.slice(m.start, m.end)
+    )}</mark>`;
+    pos = m.end;
+  }
+  if (pos < text.length) html += escapeHtml(text.slice(pos));
+  return html;
+}
+
 /**
  * 把一段文本按 query 拆成 [{ text, match }] 序列，便于 v-for 渲染高亮，
  * 而不依赖 v-html（避免 XSS 与作用域样式失效）。

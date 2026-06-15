@@ -16,6 +16,7 @@ const messages = {
   editor: {
     run: '执行',
     running: '执行中',
+    stop: '停止',
     format: '格式化',
     minify: '压缩',
     decode: '解码',
@@ -37,12 +38,14 @@ const messages = {
     copyBodyOk: '响应体已复制',
     copyFailed: '复制失败，请手动复制',
     requestFailed: '请求失败：{msg}',
+    requestAborted: '已停止本次请求',
   },
 
   result: {
     emptyTitle: '还没有结果',
     emptyHint: '在左侧编辑 curl 命令，点击「执行」或按 {hotkey}',
     running: '正在执行...',
+    runningHint: '点击「停止」或按 Esc 可中断请求',
     metaTime: '耗时',
     metaSize: '大小',
     metaType: '类型',
@@ -90,6 +93,11 @@ const messages = {
     favorite: '收藏',
     unfavorite: '取消收藏',
     confirmClearKeepFav: '清空所有非收藏历史？{count} 条收藏项将保留。',
+  },
+
+  favorites: {
+    title: '收藏夹',
+    empty: '暂无收藏，点击历史记录里的 ☆ 即可加入',
   },
 
   theme: {

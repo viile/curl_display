@@ -8,7 +8,12 @@ import LanguageSwitcher from './components/LanguageSwitcher.vue';
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
 import ShareButton from './components/ShareButton.vue';
 import ConsentBanner from './components/ConsentBanner.vue';
-import { executeCurl, type ExecuteResult, type EngineType } from './api/execute';
+import {
+  executeCurl,
+  isAbortError,
+  type ExecuteResult,
+  type EngineType,
+} from './api/execute';
 import { currentElementLocale } from './i18n';
 import { useHistory, type HistoryItem } from './composables/useHistory';
 import { useEngine } from './composables/useEngine';
@@ -28,6 +33,8 @@ const DEFAULT_CURL = `curl https://httpbin.org/get \\
 const command = ref<string>(DEFAULT_CURL);
 const loading = ref(false);
 const result = ref<ExecuteResult | null>(null);
+/** 当前正在执行请求的 AbortController；用户点击「停止」时调用 .abort()。 */
+let abortController: AbortController | null = null;
 
 const history = useHistory();
 const { engine, setEngine } = useEngine();
@@ -35,15 +42,31 @@ const { engine, setEngine } = useEngine();
 let suppressSync = false;
 
 async function runWith(eng: EngineType) {
+  // 上一次还在跑就先中断，确保同一时刻只有一个 in-flight 请求
+  if (abortController) {
+    abortController.abort();
+  }
+  const controller = new AbortController();
+  abortController = controller;
   loading.value = true;
   try {
-    const r = await executeCurl(command.value, eng);
+    const r = await executeCurl(command.value, eng, controller.signal);
+    // 期间被新的请求/手动停止覆盖了 controller，丢弃本次结果
+    if (abortController !== controller) return;
     result.value = r;
     if (!r.ok && r.error) {
       ElMessage.error(r.error);
     }
     history.record(command.value, r);
   } catch (e: any) {
+    if (isAbortError(e)) {
+      // 用户主动停止：仅给个 info 提示，不写入历史、不留错误结果
+      if (abortController === controller) {
+        ElMessage.info(t('messages.requestAborted'));
+      }
+      return;
+    }
+    if (abortController !== controller) return;
     ElMessage.error(t('messages.requestFailed', { msg: e?.message || e }));
     const failed: ExecuteResult = {
       ok: false,
@@ -62,16 +85,28 @@ async function runWith(eng: EngineType) {
     result.value = failed;
     history.record(command.value, failed);
   } finally {
-    loading.value = false;
+    // 仅当 controller 仍是当前活动的，才清空 loading；否则后来者会负责
+    if (abortController === controller) {
+      abortController = null;
+      loading.value = false;
+    }
   }
 }
 
 async function handleRun() {
+  if (loading.value) return; // 双保险：按钮已 disable
   if (!command.value.trim()) {
     ElMessage.warning(t('messages.emptyCommand'));
     return;
   }
   await runWith(engine.value);
+}
+
+function handleStop() {
+  if (!abortController) return;
+  abortController.abort();
+  abortController = null;
+  loading.value = false;
 }
 
 async function handleRetryWithServer() {
@@ -134,6 +169,7 @@ watch(command, (val) => {
             v-model="command"
             :loading="loading"
             @run="handleRun"
+            @stop="handleStop"
             @clear="handleClear"
             @pick-history="handlePickHistory"
           />

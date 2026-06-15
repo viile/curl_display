@@ -13,7 +13,21 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
-const props = defineProps<{ data: unknown }>();
+const props = withDefaults(
+  defineProps<{
+    data: unknown;
+    /** 搜索关键字；非空时高亮命中节点、自动展开命中祖先链、可与 currentMatchIndex 配合定位 */
+    query?: string;
+    /** 当前聚焦的命中下标（0-based），由父组件控制；-1 / undefined = 无聚焦 */
+    currentMatchIndex?: number;
+  }>(),
+  { query: '', currentMatchIndex: -1 }
+);
+
+const emit = defineEmits<{
+  /** 命中数量变化时上报，让父组件的搜索 footer "X / Y" 实时更新 */
+  (e: 'update:totalMatches', n: number): void;
+}>();
 
 /* ------------------------------------------------------------------ types */
 type ValueKind =
@@ -32,6 +46,11 @@ interface MNode {
   isContainer: boolean;
   depth: number;
   children: MNode[];
+  /** 指向父节点（root.parent = null）。用于命中搜索时回溯祖先链做强制展开 */
+  parent: MNode | null;
+  /** 原始 key / value，用于搜索匹配（label 经过截断，可能丢失字符） */
+  rawKey: string | number | null;
+  rawValue: unknown;
 }
 
 interface PositionedNode extends MNode {
@@ -132,7 +151,8 @@ function buildTree(
   data: unknown,
   name: string | number | null,
   depth: number,
-  isRoot: boolean
+  isRoot: boolean,
+  parent: MNode | null
 ): MNode {
   const kind = getKind(data);
   const node: MNode = {
@@ -142,14 +162,17 @@ function buildTree(
     isContainer: kind === 'object' || kind === 'array',
     depth,
     children: [],
+    parent,
+    rawKey: name,
+    rawValue: data,
   };
   if (kind === 'object') {
     for (const [k, v] of Object.entries(data as object)) {
-      node.children.push(buildTree(v, k, depth + 1, false));
+      node.children.push(buildTree(v, k, depth + 1, false, node));
     }
   } else if (kind === 'array') {
     (data as unknown[]).forEach((v, i) => {
-      node.children.push(buildTree(v, i, depth + 1, false));
+      node.children.push(buildTree(v, i, depth + 1, false, node));
     });
   }
   return node;
@@ -157,7 +180,18 @@ function buildTree(
 
 const rootNode = computed<MNode>(() => {
   _id = 0;
-  return buildTree(props.data, null, 0, true);
+  return buildTree(props.data, null, 0, true, null);
+});
+
+/** id → MNode 反查表；pan 到目标节点、定位祖先链都要用 */
+const nodeById = computed<Map<string, MNode>>(() => {
+  const map = new Map<string, MNode>();
+  const walk = (n: MNode) => {
+    map.set(n.id, n);
+    for (const c of n.children) walk(c);
+  };
+  walk(rootNode.value);
+  return map;
 });
 
 /* --------------------------------------------------------- 折叠状态管理 */
@@ -189,6 +223,87 @@ function toggleCollapse(id: string) {
   collapsedIds.value = s;
 }
 
+/* ------------------------------------------------------------- 搜索匹配 */
+function primitiveToString(v: unknown): string {
+  if (v === null) return 'null';
+  if (v === undefined) return 'undefined';
+  if (typeof v === 'string') return v;
+  return String(v);
+}
+
+/**
+ * 命中节点 id 列表，pre-order 顺序 = 视觉自上而下顺序，方便 prev/next 顺次跳转。
+ * 命中规则：
+ *   - 对象 key：toString 后忽略大小写包含 query
+ *   - 基本值（string / number / boolean / null）：转字符串后忽略大小写包含 query
+ *   - 数组下标本身不参与匹配（避免搜 "1" 命中 1/10/11... 噪音）
+ *   - 容器节点不按"值"参与匹配（label 里的 keys/items 计数对用户没意义）
+ */
+const matchedIds = computed<string[]>(() => {
+  const q = props.query.trim().toLowerCase();
+  if (!q) return [];
+  const ids: string[] = [];
+  const walk = (n: MNode) => {
+    let matched = false;
+    if (
+      n.rawKey != null &&
+      typeof n.rawKey !== 'number' &&
+      String(n.rawKey).toLowerCase().includes(q)
+    ) {
+      matched = true;
+    }
+    if (!matched && !n.isContainer) {
+      if (primitiveToString(n.rawValue).toLowerCase().includes(q)) {
+        matched = true;
+      }
+    }
+    if (matched) ids.push(n.id);
+    for (const c of n.children) walk(c);
+  };
+  walk(rootNode.value);
+  return ids;
+});
+
+const matchedIdSet = computed<Set<string>>(() => new Set(matchedIds.value));
+
+/** 命中节点对应的当前 id（受父组件 currentMatchIndex 驱动） */
+const currentMatchId = computed<string | null>(() => {
+  const idx = props.currentMatchIndex;
+  if (idx == null || idx < 0) return null;
+  return matchedIds.value[idx] ?? null;
+});
+
+/** 命中节点的全部祖先 id 集合：搜索期间这些节点强制展开，确保命中可见 */
+const forceExpandedIds = computed<Set<string>>(() => {
+  const set = new Set<string>();
+  const lookup = nodeById.value;
+  for (const id of matchedIds.value) {
+    let node = lookup.get(id)?.parent ?? null;
+    while (node) {
+      set.add(node.id);
+      node = node.parent;
+    }
+  }
+  return set;
+});
+
+/** 当前是否搜索态：true 时折叠状态以 forceExpandedIds 为准 */
+const isSearching = computed(() => props.query.trim().length > 0);
+
+function isEffectivelyCollapsed(id: string): boolean {
+  if (isSearching.value && forceExpandedIds.value.has(id)) return false;
+  return collapsedIds.value.has(id);
+}
+
+// 命中数变化时向父组件同步，由父组件维护 totalMatches / currentMatchIndex
+watch(
+  matchedIds,
+  (arr) => {
+    emit('update:totalMatches', arr.length);
+  },
+  { immediate: true }
+);
+
 /* ------------------------------------------------------------------ 布局 */
 interface LayoutResult {
   nodes: PositionedNode[];
@@ -199,15 +314,14 @@ interface LayoutResult {
 
 const layout = computed<LayoutResult>(() => {
   const root = rootNode.value;
-  const collapsed = collapsedIds.value;
   const flat: PositionedNode[] = [];
   const edges: Edge[] = [];
 
   // 第一遍：post-order 分配 y（单位 = 行）
   let leafCursor = 0;
   const layoutY = (n: MNode): { y: number } => {
-    const isCollapsed = collapsed.has(n.id);
-    if (!n.children.length || isCollapsed) {
+    const collapsedHere = isEffectivelyCollapsed(n.id);
+    if (!n.children.length || collapsedHere) {
       const y = leafCursor++;
       (n as PositionedNode).y = y;
       return { y };
@@ -232,7 +346,7 @@ const layout = computed<LayoutResult>(() => {
     } as PositionedNode;
     flat.push(pos);
 
-    if (collapsed.has(n.id)) return pos;
+    if (isEffectivelyCollapsed(n.id)) return pos;
     for (const c of n.children) {
       const cp = visit(c);
       edges.push({
@@ -271,7 +385,7 @@ function edgePath(e: Edge): string {
 }
 
 function isCollapsed(id: string) {
-  return collapsedIds.value.has(id);
+  return isEffectivelyCollapsed(id);
 }
 
 function nodeHasChildren(n: PositionedNode) {
@@ -354,6 +468,37 @@ function reset() {
   ty.value = 20;
 }
 
+/**
+ * 把指定节点平移到视口中心，scale 保持不变。
+ *
+ * 推导：父容器内某节点中心(world) = (node.x + node.w/2, node.y + node.h/2)
+ * 经 translate(tx,ty) scale(s) 后投影到视口内坐标系为：
+ *   viewportX = tx + (node.x + node.w/2) * s
+ *   viewportY = ty + (node.y + node.h/2) * s
+ * 想让它落到视口正中心 (rect.w/2, rect.h/2)，反解 tx / ty。
+ */
+function panToNode(id: string) {
+  if (!wrap.value) return;
+  const node = layout.value.nodes.find((n) => n.id === id);
+  if (!node) return;
+  const rect = wrap.value.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const s = scale.value;
+  tx.value = rect.width / 2 - (node.x + node.w / 2) * s;
+  ty.value = rect.height / 2 - (node.y + node.h / 2) * s;
+}
+
+// 父组件切换 currentMatchIndex 时，平滑滚到对应节点
+// 等 nextTick 确保 forceExpandedIds 已驱动 layout 重算、节点已存在
+watch(
+  () => props.currentMatchIndex,
+  () => {
+    const id = currentMatchId.value;
+    if (!id) return;
+    nextTick(() => panToNode(id));
+  }
+);
+
 onMounted(() => {
   nextTick(fitToView);
   window.addEventListener('resize', fitToView);
@@ -401,7 +546,12 @@ function onNodeClick(n: PositionedNode, e: MouseEvent) {
             :key="n.id"
             :transform="`translate(${n.x} ${n.y})`"
             class="mm-node"
-            :class="{ clickable: nodeHasChildren(n), root: n.depth === 0 }"
+            :class="{
+              clickable: nodeHasChildren(n),
+              root: n.depth === 0,
+              matched: matchedIdSet.has(n.id),
+              'current-match': n.id === currentMatchId,
+            }"
             @mousedown.stop
             @click="onNodeClick(n, $event)"
           >
@@ -519,6 +669,23 @@ function onNodeClick(n: PositionedNode, e: MouseEvent) {
 .mm-node.clickable:hover rect {
   stroke-width: 2;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.18));
+}
+
+/* 搜索命中节点：金黄色描边，更醒目 */
+.mm-node.matched > rect {
+  stroke: #f5b94a;
+  stroke-width: 2.5;
+}
+/* 当前聚焦的命中：再加发光晕，并改填充让对比更强 */
+.mm-node.current-match > rect {
+  stroke: #f5b94a;
+  stroke-width: 3.5;
+  fill: rgba(245, 185, 74, 0.32);
+  filter: drop-shadow(0 0 8px rgba(245, 185, 74, 0.65));
+}
+.mm-node.matched .mm-label,
+.mm-node.current-match .mm-label {
+  font-weight: 700;
 }
 
 .mm-label {

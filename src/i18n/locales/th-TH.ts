@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: 'รัน',
     running: 'กำลังรัน',
+    stop: 'หยุด',
     format: 'จัดรูปแบบ',
     minify: 'ย่อ',
     decode: 'ถอดรหัส',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'คัดลอกเนื้อหาการตอบกลับแล้ว',
     copyFailed: 'คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง',
     requestFailed: 'คำขอล้มเหลว: {msg}',
+    requestAborted: 'หยุดคำขอแล้ว',
   },
 
   result: {
     emptyTitle: 'ยังไม่มีผลลัพธ์',
     emptyHint: 'แก้ไขคำสั่ง curl ทางซ้าย แล้วคลิก «รัน» หรือกด {hotkey}',
     running: 'กำลังรัน...',
+    runningHint: 'คลิก "หยุด" หรือกด Esc เพื่อยกเลิกคำขอ',
     metaTime: 'เวลา',
     metaSize: 'ขนาด',
     metaType: 'ประเภท',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'นำออกจากรายการโปรด',
     confirmClearKeepFav:
       'ล้างประวัติที่ไม่ใช่รายการโปรดทั้งหมด? รายการโปรด {count} รายการจะคงไว้',
+  },
+
+  favorites: {
+    title: 'รายการโปรด',
+    empty: 'ยังไม่มีรายการโปรด — แตะ ☆ บนรายการประวัติเพื่อเพิ่ม',
   },
 
   theme: {

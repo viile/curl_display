@@ -2,7 +2,15 @@
 import { computed, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
-import { CaretRight, Brush, Delete, DocumentCopy, Loading, Key } from '@element-plus/icons-vue';
+import {
+  CaretRight,
+  Brush,
+  Delete,
+  DocumentCopy,
+  Loading,
+  Key,
+  VideoPause,
+} from '@element-plus/icons-vue';
 import { formatCurl, minifyCurl } from '../utils/curl';
 import HistoryMenu from './HistoryMenu.vue';
 import EngineSwitcher from './EngineSwitcher.vue';
@@ -17,6 +25,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
   (e: 'run'): void;
+  (e: 'stop'): void;
   (e: 'clear'): void;
   (e: 'pick-history', item: HistoryItem): void;
 }>();
@@ -83,7 +92,13 @@ function handleClear() {
 function handleKeyDown(e: KeyboardEvent) {
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
     e.preventDefault();
+    if (props.loading) return; // 防抖：loading 期间忽略快捷键
     emit('run');
+    return;
+  }
+  if (e.key === 'Escape' && props.loading) {
+    e.preventDefault();
+    emit('stop');
     return;
   }
   if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
@@ -106,17 +121,33 @@ function handleKeyDown(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="editor-root">
+  <div class="editor-root" :class="{ 'is-loading': props.loading }">
     <div class="toolbar">
       <div class="toolbar-left">
-        <el-button
-          type="primary"
-          :icon="props.loading ? Loading : CaretRight"
-          :loading="props.loading"
-          @click="emit('run')"
-        >
-          {{ t('editor.run') }} <span class="kbd">{{ kbdRun }}</span>
-        </el-button>
+        <div class="run-group" :class="{ 'is-loading': props.loading }">
+          <el-button
+            type="primary"
+            class="run-btn"
+            :class="{ 'is-running': props.loading }"
+            :icon="props.loading ? Loading : CaretRight"
+            :loading="props.loading"
+            :disabled="props.loading"
+            @click="emit('run')"
+          >
+            {{ props.loading ? t('editor.running') : t('editor.run') }}
+            <span class="kbd">{{ kbdRun }}</span>
+          </el-button>
+          <el-button
+            v-if="props.loading"
+            type="danger"
+            class="stop-btn"
+            :icon="VideoPause"
+            @click="emit('stop')"
+          >
+            {{ t('editor.stop') }}
+            <span class="kbd">Esc</span>
+          </el-button>
+        </div>
         <el-button :icon="Brush" @click="handleFormat">
           {{ t('editor.format') }} <span class="kbd">{{ kbdFormat }}</span>
         </el-button>
@@ -127,6 +158,11 @@ function handleKeyDown(e: KeyboardEvent) {
           {{ t('editor.decode') }}
         </el-button>
         <HistoryMenu
+          :current-command="value"
+          @pick="(item) => emit('pick-history', item)"
+        />
+        <HistoryMenu
+          mode="favorites"
           :current-command="value"
           @pick="(item) => emit('pick-history', item)"
         />
@@ -143,6 +179,9 @@ function handleKeyDown(e: KeyboardEvent) {
     </div>
 
     <div class="editor-body">
+      <div v-if="props.loading" class="progress-bar" aria-hidden="true">
+        <span class="progress-bar-track" />
+      </div>
       <pre class="line-numbers" aria-hidden="true">{{
         Array.from({ length: lineCount }, (_, i) => i + 1).join('\n')
       }}</pre>
@@ -217,12 +256,88 @@ function handleKeyDown(e: KeyboardEvent) {
   color: var(--kbd-text);
 }
 
+/* Run / Stop 按钮组 */
+.run-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.run-btn {
+  position: relative;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+/* loading 中的 Run 按钮：脉冲光晕，颜色变冷，更醒目地表明"在跑" */
+.run-btn.is-running {
+  animation: run-pulse 1.4s ease-in-out infinite;
+}
+@keyframes run-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(64, 158, 255, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(64, 158, 255, 0);
+  }
+}
+/* Stop 按钮：滑入动画，引导用户注意 */
+.stop-btn {
+  animation: stop-slide-in 0.2s ease-out;
+}
+@keyframes stop-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .editor-body {
+  position: relative;
   flex: 1;
   min-height: 0;
   display: flex;
   overflow: hidden;
   background: var(--panel);
+}
+
+/* 顶部细长进度条：indeterminate 来回滑动，是最醒目的「正在执行」信号 */
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(64, 158, 255, 0.12);
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
+.progress-bar-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent, #409eff),
+    var(--accent-2, #79bbff),
+    transparent
+  );
+  animation: progress-slide 1.1s ease-in-out infinite;
+  border-radius: 3px;
+}
+@keyframes progress-slide {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .line-numbers {

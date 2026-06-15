@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: '実行',
     running: '実行中',
+    stop: '停止',
     format: 'フォーマット',
     minify: '圧縮',
     decode: 'デコード',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: 'レスポンスボディをコピーしました',
     copyFailed: 'コピーに失敗しました。手動でコピーしてください',
     requestFailed: 'リクエスト失敗: {msg}',
+    requestAborted: 'リクエストを停止しました',
   },
 
   result: {
     emptyTitle: 'まだ結果はありません',
     emptyHint: '左側で curl コマンドを編集し、「実行」をクリックするか {hotkey} を押してください',
     running: '実行中...',
+    runningHint: '「停止」をクリックするか Esc キーでリクエストを中断できます',
     metaTime: '時間',
     metaSize: 'サイズ',
     metaType: 'タイプ',
@@ -93,6 +96,11 @@ const messages: Messages = {
     unfavorite: 'お気に入りから削除',
     confirmClearKeepFav:
       'お気に入り以外をすべて削除しますか？{count} 件のお気に入りは保持されます。',
+  },
+
+  favorites: {
+    title: 'お気に入り',
+    empty: 'お気に入りはまだありません — 履歴の ☆ をタップして追加できます',
   },
 
   theme: {

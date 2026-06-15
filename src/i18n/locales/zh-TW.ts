@@ -18,6 +18,7 @@ const messages: Messages = {
   editor: {
     run: '執行',
     running: '執行中',
+    stop: '停止',
     format: '格式化',
     minify: '壓縮',
     decode: '解碼',
@@ -39,12 +40,14 @@ const messages: Messages = {
     copyBodyOk: '回應主體已複製',
     copyFailed: '複製失敗，請手動複製',
     requestFailed: '請求失敗：{msg}',
+    requestAborted: '已停止本次請求',
   },
 
   result: {
     emptyTitle: '尚無結果',
     emptyHint: '在左側編輯 curl 命令，點擊「執行」或按 {hotkey}',
     running: '執行中...',
+    runningHint: '點擊「停止」或按 Esc 可中斷請求',
     metaTime: '耗時',
     metaSize: '大小',
     metaType: '類型',
@@ -92,6 +95,11 @@ const messages: Messages = {
     favorite: '收藏',
     unfavorite: '取消收藏',
     confirmClearKeepFav: '清空所有非收藏歷史？將保留 {count} 個收藏項目。',
+  },
+
+  favorites: {
+    title: '收藏夾',
+    empty: '暫無收藏，點擊歷史記錄裡的 ☆ 即可加入',
   },
 
   theme: {
