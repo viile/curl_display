@@ -314,7 +314,7 @@ def generate_cursor_message(
     stat: str,
 ) -> str:
     prompt = (
-        "你是一个资深工程师。请根据下面的 git diff 生成简洁、准确的中文 Conventional Commits 提交信息。\n"
+        "你是一个资深工程师。请根据下面的 git diff 生成简洁、准确的英文 Conventional Commits 提交信息。\n"
         "输出格式严格遵循：\n"
         "第一行: <type>(<scope>): <subject>，subject 用一句话概括，不超过 72 字符。\n"
         "type 取值: feat / fix / refactor / docs / style / test / chore / build / ci / perf。\n"
