@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: '無相符項目',
     searchPrev: '上一個相符',
     searchNext: '下一個相符',
+    searchPlaceholderRegex: '以正規表達式搜尋…',
+    regexToggle: '使用正規表達式',
+    regexInvalid: '正規表達式無效',
+    searchTargetLabel: '搜尋範圍',
+    searchTargetAll: '全部',
+    searchTargetKey: '鍵',
+    searchTargetValue: '值',
   },
 
   consent: {

@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: '一致なし',
     searchPrev: '前の一致',
     searchNext: '次の一致',
+    searchPlaceholderRegex: '正規表現で検索…',
+    regexToggle: '正規表現を使用',
+    regexInvalid: '無効な正規表現',
+    searchTargetLabel: '検索対象',
+    searchTargetAll: 'すべて',
+    searchTargetKey: 'キー',
+    searchTargetValue: '値',
   },
 
   consent: {

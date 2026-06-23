@@ -67,6 +67,13 @@ const messages = {
     searchEmpty: '无匹配项',
     searchPrev: '上一个匹配',
     searchNext: '下一个匹配',
+    searchPlaceholderRegex: '用正则表达式搜索…',
+    regexToggle: '使用正则表达式',
+    regexInvalid: '正则表达式无效',
+    searchTargetLabel: '搜索范围',
+    searchTargetAll: '全部',
+    searchTargetKey: '键',
+    searchTargetValue: '值',
   },
 
   consent: {

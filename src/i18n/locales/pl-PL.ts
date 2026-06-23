@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Brak dopasowań',
     searchPrev: 'Poprzednie dopasowanie',
     searchNext: 'Następne dopasowanie',
+    searchPlaceholderRegex: 'Szukaj wyrażeniem regularnym…',
+    regexToggle: 'Użyj wyrażenia regularnego',
+    regexInvalid: 'Nieprawidłowe wyrażenie regularne',
+    searchTargetLabel: 'Cel wyszukiwania',
+    searchTargetAll: 'Wszystko',
+    searchTargetKey: 'Klucz',
+    searchTargetValue: 'Wartość',
   },
 
   consent: {

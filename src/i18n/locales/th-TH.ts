@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'ไม่พบรายการ',
     searchPrev: 'รายการก่อนหน้า',
     searchNext: 'รายการถัดไป',
+    searchPlaceholderRegex: 'ค้นหาด้วย regex…',
+    regexToggle: 'ใช้นิพจน์ปกติ',
+    regexInvalid: 'นิพจน์ปกติไม่ถูกต้อง',
+    searchTargetLabel: 'ขอบเขตการค้นหา',
+    searchTargetAll: 'ทั้งหมด',
+    searchTargetKey: 'คีย์',
+    searchTargetValue: 'ค่า',
   },
 
   consent: {

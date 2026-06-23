@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Žádné shody',
     searchPrev: 'Předchozí shoda',
     searchNext: 'Další shoda',
+    searchPlaceholderRegex: 'Hledat regulárním výrazem…',
+    regexToggle: 'Použít regulární výraz',
+    regexInvalid: 'Neplatný regulární výraz',
+    searchTargetLabel: 'Cíl hledání',
+    searchTargetAll: 'Vše',
+    searchTargetKey: 'Klíč',
+    searchTargetValue: 'Hodnota',
   },
 
   consent: {

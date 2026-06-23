@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Совпадений нет',
     searchPrev: 'Предыдущее совпадение',
     searchNext: 'Следующее совпадение',
+    searchPlaceholderRegex: 'Поиск по регулярному выражению…',
+    regexToggle: 'Использовать регулярное выражение',
+    regexInvalid: 'Неверное регулярное выражение',
+    searchTargetLabel: 'Цель поиска',
+    searchTargetAll: 'Все',
+    searchTargetKey: 'Ключ',
+    searchTargetValue: 'Значение',
   },
 
   consent: {

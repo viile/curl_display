@@ -13,7 +13,7 @@
  */
 import { computed, nextTick, ref, watch, watchEffect } from 'vue';
 import JsonTreeView from './JsonTreeView.vue';
-import { pathToKey, splitByQuery } from '../utils/jsonSearch';
+import { pathToKey, splitByQuery, type SearchTarget } from '../utils/jsonSearch';
 
 const props = withDefaults(
   defineProps<{
@@ -28,6 +28,10 @@ const props = withDefaults(
     path?: (string | number)[];
     /** 搜索词，空字符串表示无搜索 */
     query?: string;
+    /** 是否以正则解析 query；与父组件的 regex 开关保持一致 */
+    regex?: boolean;
+    /** 匹配目标：both = key+value（默认）/ key / value */
+    target?: SearchTarget;
     /** 被强制展开的容器节点 pathKey 集合（来自搜索结果） */
     forceExpandedPaths?: Set<string> | null;
     /** 当前聚焦的命中节点 pathKey，本节点匹配则会滚入视图并高亮 */
@@ -39,6 +43,8 @@ const props = withDefaults(
     asArrayItem: false,
     path: () => [],
     query: '',
+    regex: false,
+    target: 'both',
     forceExpandedPaths: null,
     currentMatchPath: null,
   }
@@ -127,21 +133,42 @@ const keyDisplay = computed(() => {
 
 const valueDisplay = computed(() => (isContainer.value ? '' : formatPrimitive(props.data)));
 
-// 只对对象 key 做命中（数组下标不参与搜索，与 searchJson 行为一致）
-const isKeyMatch = computed(() => {
-  if (!props.query || props.asArrayItem || props.name === null) return false;
-  return String(props.name).toLowerCase().includes(props.query.toLowerCase());
+// 把 query 预编译成 (s)=>boolean 的匹配器；regex 失败时退化为"不匹配任何东西"，
+// 与父组件 ResultPanel 的搜索结果 0 命中行为对齐
+const matcher = computed<((s: string) => boolean) | null>(() => {
+  const q = props.query.trim();
+  if (!q) return null;
+  if (props.regex) {
+    try {
+      const re = new RegExp(q, 'i');
+      return (s: string) => re.test(s);
+    } catch {
+      return null;
+    }
+  }
+  const lowerQ = q.toLowerCase();
+  return (s: string) => s.toLowerCase().includes(lowerQ);
 });
 
+// 只对对象 key 做命中（数组下标不参与搜索，与 searchJson 行为一致）。
+// target === 'value' 时整体跳过 key 命中
+const isKeyMatch = computed(() => {
+  if (!matcher.value || props.asArrayItem || props.name === null) return false;
+  if (props.target === 'value') return false;
+  return matcher.value(String(props.name));
+});
+
+// target === 'key' 时跳过 value 命中
 const isValueMatch = computed(() => {
-  if (!props.query || isContainer.value || props.data === undefined) return false;
+  if (!matcher.value || isContainer.value || props.data === undefined) return false;
+  if (props.target === 'key') return false;
   const raw =
     props.data === null
       ? 'null'
       : typeof props.data === 'string'
         ? props.data
         : String(props.data);
-  return raw.toLowerCase().includes(props.query.toLowerCase());
+  return matcher.value(raw);
 });
 
 const isCurrentMatch = computed(
@@ -149,10 +176,14 @@ const isCurrentMatch = computed(
 );
 
 const keySegments = computed(() =>
-  isKeyMatch.value ? splitByQuery(keyDisplay.value, props.query) : null
+  isKeyMatch.value
+    ? splitByQuery(keyDisplay.value, props.query, { regex: props.regex })
+    : null
 );
 const valueSegments = computed(() =>
-  isValueMatch.value ? splitByQuery(valueDisplay.value, props.query) : null
+  isValueMatch.value
+    ? splitByQuery(valueDisplay.value, props.query, { regex: props.regex })
+    : null
 );
 
 const rowRef = ref<HTMLElement | null>(null);
@@ -240,6 +271,8 @@ watch(
           :as-array-item="kind === 'array'"
           :path="[...path, k]"
           :query="query"
+          :regex="regex"
+          :target="target"
           :force-expanded-paths="forceExpandedPaths"
           :current-match-path="currentMatchPath"
         />

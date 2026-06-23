@@ -12,16 +12,21 @@
  * 故意不引入第三方脑图库以保持包体积和主题一致性。
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import type { SearchTarget } from '../utils/jsonSearch';
 
 const props = withDefaults(
   defineProps<{
     data: unknown;
     /** 搜索关键字；非空时高亮命中节点、自动展开命中祖先链、可与 currentMatchIndex 配合定位 */
     query?: string;
+    /** 是否以正则解析 query；与父组件 regex 开关保持一致 */
+    regex?: boolean;
+    /** 匹配目标：both = key+value（默认）/ key / value */
+    target?: SearchTarget;
     /** 当前聚焦的命中下标（0-based），由父组件控制；-1 / undefined = 无聚焦 */
     currentMatchIndex?: number;
   }>(),
-  { query: '', currentMatchIndex: -1 }
+  { query: '', regex: false, target: 'both', currentMatchIndex: -1 }
 );
 
 const emit = defineEmits<{
@@ -234,26 +239,42 @@ function primitiveToString(v: unknown): string {
 /**
  * 命中节点 id 列表，pre-order 顺序 = 视觉自上而下顺序，方便 prev/next 顺次跳转。
  * 命中规则：
- *   - 对象 key：toString 后忽略大小写包含 query
+ *   - 对象 key：toString 后忽略大小写包含 query（regex 模式下走正则）
  *   - 基本值（string / number / boolean / null）：转字符串后忽略大小写包含 query
  *   - 数组下标本身不参与匹配（避免搜 "1" 命中 1/10/11... 噪音）
  *   - 容器节点不按"值"参与匹配（label 里的 keys/items 计数对用户没意义）
  */
 const matchedIds = computed<string[]>(() => {
-  const q = props.query.trim().toLowerCase();
+  const q = props.query.trim();
   if (!q) return [];
+  // 预编译匹配器：regex 模式失败时返回空数组（=零命中），与搜索工具的 fallback 行为一致
+  let predicate: (s: string) => boolean;
+  if (props.regex) {
+    try {
+      const re = new RegExp(q, 'i');
+      predicate = (s) => re.test(s);
+    } catch {
+      return [];
+    }
+  } else {
+    const lower = q.toLowerCase();
+    predicate = (s) => s.toLowerCase().includes(lower);
+  }
+  const matchKey = props.target !== 'value';
+  const matchValue = props.target !== 'key';
   const ids: string[] = [];
   const walk = (n: MNode) => {
     let matched = false;
     if (
+      matchKey &&
       n.rawKey != null &&
       typeof n.rawKey !== 'number' &&
-      String(n.rawKey).toLowerCase().includes(q)
+      predicate(String(n.rawKey))
     ) {
       matched = true;
     }
-    if (!matched && !n.isContainer) {
-      if (primitiveToString(n.rawValue).toLowerCase().includes(q)) {
+    if (!matched && matchValue && !n.isContainer) {
+      if (predicate(primitiveToString(n.rawValue))) {
         matched = true;
       }
     }

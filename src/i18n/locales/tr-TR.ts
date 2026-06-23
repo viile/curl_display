@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Eşleşme yok',
     searchPrev: 'Önceki eşleşme',
     searchNext: 'Sonraki eşleşme',
+    searchPlaceholderRegex: 'Regex ile ara…',
+    regexToggle: 'Düzenli ifade kullan',
+    regexInvalid: 'Geçersiz regex',
+    searchTargetLabel: 'Arama hedefi',
+    searchTargetAll: 'Tümü',
+    searchTargetKey: 'Anahtar',
+    searchTargetValue: 'Değer',
   },
 
   consent: {

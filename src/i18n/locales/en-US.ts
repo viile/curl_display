@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'No matches',
     searchPrev: 'Previous match',
     searchNext: 'Next match',
+    searchPlaceholderRegex: 'Search by regex…',
+    regexToggle: 'Use regular expression',
+    regexInvalid: 'Invalid regex',
+    searchTargetLabel: 'Search target',
+    searchTargetAll: 'All',
+    searchTargetKey: 'Key',
+    searchTargetValue: 'Value',
   },
 
   consent: {

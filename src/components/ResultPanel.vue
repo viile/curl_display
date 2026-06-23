@@ -18,7 +18,13 @@ import type { ExecuteResult } from '../api/execute';
 import { DESKTOP_DOWNLOAD_URL } from '../config/links';
 import JsonTreeView from './JsonTreeView.vue';
 import JsonMindMap from './JsonMindMap.vue';
-import { findTextMatches, renderTextWithHighlights, searchJson } from '../utils/jsonSearch';
+import {
+  findTextMatches,
+  isValidRegex,
+  renderTextWithHighlights,
+  searchJson,
+  type SearchTarget,
+} from '../utils/jsonSearch';
 import { openExternal } from '../utils/openExternal';
 
 type BodyFormat = 'text' | 'tree' | 'mind';
@@ -38,6 +44,10 @@ const activeTab = ref<'body' | 'headers' | 'raw'>('body');
 const bodyFormat = ref<BodyFormat>('tree');
 const searchQuery = ref('');
 const currentMatchIndex = ref(0);
+// 正则模式开关——刻意做成"跨结果保留"的 UI 偏好，避免每次执行后用户都要重新勾选
+const regexMode = ref(false);
+// JSON 搜索目标：默认 key + value 一起搜；切换到 key/value 时单独过滤
+const searchTarget = ref<SearchTarget>('both');
 
 watch(
   () => props.result,
@@ -186,7 +196,11 @@ const treeSearch = computed(() => {
   if (searchScope.value !== 'tree' || !searchQuery.value.trim()) {
     return { matches: [], expandedPaths: new Set<string>(), truncated: false };
   }
-  return searchJson(parsedBody.value, searchQuery.value, { maxMatches: 500 });
+  return searchJson(parsedBody.value, searchQuery.value, {
+    maxMatches: 500,
+    regex: regexMode.value,
+    target: searchTarget.value,
+  });
 });
 
 const textSearch = computed(() => {
@@ -196,7 +210,16 @@ const textSearch = computed(() => {
   ) {
     return { matches: [], truncated: false };
   }
-  return findTextMatches(searchableText.value, searchQuery.value, { maxMatches: 2000 });
+  return findTextMatches(searchableText.value, searchQuery.value, {
+    maxMatches: 2000,
+    regex: regexMode.value,
+  });
+});
+
+/** 规则模式下 query 是否能编译成正则；用来红色提示，并屏蔽 0 命中提示 */
+const regexInvalid = computed(() => {
+  if (!regexMode.value || !searchQuery.value.trim()) return false;
+  return !isValidRegex(searchQuery.value);
 });
 
 /** mind 模式的命中数由 JsonMindMap 通过 @update:total-matches 上报 */
@@ -229,9 +252,16 @@ const isTruncated = computed(() => {
   }
 });
 
-// 切换 tab / 切换 body 格式 / 数据变化 / query 变化 → currentMatchIndex 复位
+// 切换 tab / 切换 body 格式 / 数据变化 / query / 正则模式 / 搜索目标 任一变 → 复位
 watch(
-  [searchQuery, () => bodyFormat.value, () => activeTab.value, () => parsedBody.value],
+  [
+    searchQuery,
+    () => bodyFormat.value,
+    () => activeTab.value,
+    () => parsedBody.value,
+    regexMode,
+    searchTarget,
+  ],
   () => {
     currentMatchIndex.value = 0;
   }
@@ -255,7 +285,12 @@ const currentMatchPath = computed<string | null>(() => {
 /** text 模式下的渲染 HTML（含 <mark> 高亮）——v-html 安全：内部 escape 过 */
 const textHighlightedHtml = computed(() => {
   if (searchScope.value !== 'text-body' && searchScope.value !== 'text-raw') return '';
-  return renderTextWithHighlights(searchableText.value, searchQuery.value, safeCurrentIndex.value);
+  return renderTextWithHighlights(
+    searchableText.value,
+    searchQuery.value,
+    safeCurrentIndex.value,
+    { regex: regexMode.value }
+  );
 });
 
 /** text-body 模式：未搜索时退回 JSON 语法高亮的 html；搜索期间让位给 mark 高亮（更直观） */
@@ -272,14 +307,15 @@ const isTextLikeRender = computed(
 const textBodyRef = ref<HTMLElement | null>(null);
 const rawBodyRef = ref<HTMLElement | null>(null);
 
-/** 当前 match 切换时，把对应 <mark.current-hit> 滚入视口 */
+/** 当前 match 切换时，把对应 <mark.current-hit> 滚入视口正中央，
+ * 让人在大段文本里一眼能锁定高亮，而不是被卷到视口边缘 */
 watch([safeCurrentIndex, textHighlightedHtml], async () => {
   if (!isTextLikeRender.value || safeCurrentIndex.value < 0) return;
   await nextTick();
   const root =
     searchScope.value === 'text-raw' ? rawBodyRef.value : textBodyRef.value;
   const el = root?.querySelector('.current-hit') as HTMLElement | null;
-  el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  el?.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
 });
 
 function gotoMatch(delta: number) {
@@ -302,6 +338,21 @@ const FORMAT_OPTIONS: FormatOption[] = [
   { key: 'tree', labelKey: 'result.formatTree', icon: Share },
   { key: 'mind', labelKey: 'result.formatMind', icon: Connection },
 ];
+
+interface TargetOption {
+  key: SearchTarget;
+  labelKey: string;
+}
+const TARGET_OPTIONS: TargetOption[] = [
+  { key: 'both', labelKey: 'result.searchTargetAll' },
+  { key: 'key', labelKey: 'result.searchTargetKey' },
+  { key: 'value', labelKey: 'result.searchTargetValue' },
+];
+
+/** key/value 过滤只在结构化视图（tree / mind）下有意义；文本/原始模式没有 key/value 概念 */
+const showSearchTarget = computed(
+  () => searchScope.value === 'tree' || searchScope.value === 'mind'
+);
 
 const headerCount = computed(() =>
   (props.result?.headers ?? []).reduce((acc, b) => acc + b.headers.length, 0)
@@ -468,18 +519,65 @@ const headerCount = computed(() =>
       <div
         v-if="searchActive"
         class="json-search-bar"
-        :class="{ 'has-query': !!searchQuery.trim() }"
+        :class="{
+          'has-query': !!searchQuery.trim(),
+          'regex-invalid': regexInvalid,
+        }"
       >
         <el-input
           v-model="searchQuery"
-          :placeholder="t('result.searchPlaceholder')"
+          class="search-input"
+          :placeholder="
+            regexMode ? t('result.searchPlaceholderRegex') : t('result.searchPlaceholder')
+          "
           size="small"
           clearable
           :prefix-icon="Search"
           @keydown.enter="onSearchEnter"
-        />
+        >
+          <template #suffix>
+            <button
+              type="button"
+              class="search-flag-btn"
+              :class="{ active: regexMode }"
+              :title="t('result.regexToggle')"
+              :aria-label="t('result.regexToggle')"
+              :aria-pressed="regexMode"
+              @click.stop="regexMode = !regexMode"
+              @mousedown.prevent
+            >
+              .*
+            </button>
+          </template>
+        </el-input>
+        <div
+          v-if="showSearchTarget"
+          class="search-target-switch"
+          role="tablist"
+          :aria-label="t('result.searchTargetLabel')"
+        >
+          <button
+            v-for="opt in TARGET_OPTIONS"
+            :key="opt.key"
+            type="button"
+            class="search-target-btn"
+            :class="{ active: searchTarget === opt.key }"
+            :aria-selected="searchTarget === opt.key"
+            :title="t(opt.labelKey)"
+            @click="searchTarget = opt.key"
+          >
+            {{ t(opt.labelKey) }}
+          </button>
+        </div>
         <div v-if="searchQuery.trim()" class="search-meta">
-          <span v-if="totalMatches" class="search-count" aria-live="polite">
+          <span
+            v-if="regexInvalid"
+            class="search-count search-count-empty"
+            aria-live="polite"
+          >
+            {{ t('result.regexInvalid') }}
+          </span>
+          <span v-else-if="totalMatches" class="search-count" aria-live="polite">
             {{ safeCurrentIndex + 1 }} / {{ totalMatches }}{{ isTruncated ? '+' : '' }}
           </span>
           <span v-else class="search-count search-count-empty" aria-live="polite">
@@ -515,6 +613,8 @@ const headerCount = computed(() =>
             <JsonTreeView
               :data="parsedBody"
               :query="searchQuery"
+              :regex="regexMode"
+              :target="searchTarget"
               :force-expanded-paths="treeSearch.expandedPaths"
               :current-match-path="currentMatchPath"
             />
@@ -523,6 +623,8 @@ const headerCount = computed(() =>
             <JsonMindMap
               :data="parsedBody"
               :query="searchQuery"
+              :regex="regexMode"
+              :target="searchTarget"
               :current-match-index="safeCurrentIndex"
               @update:total-matches="mindTotalMatches = $event"
             />
@@ -971,6 +1073,72 @@ const headerCount = computed(() =>
 .json-search-bar :deep(.el-input) {
   flex: 1;
   max-width: 360px;
+}
+/* 非法正则：把输入框描红，与 search-count 的"Invalid regex"文字呼应 */
+.json-search-bar.regex-invalid :deep(.search-input .el-input__wrapper) {
+  box-shadow: 0 0 0 1px var(--danger, #d63948) inset;
+}
+
+/* el-input 内部的 .* 切换按钮：模仿 VSCode 搜索栏 */
+.search-flag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  user-select: none;
+  transition: background 0.12s, color 0.12s;
+}
+.search-flag-btn:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+.search-flag-btn.active {
+  background: color-mix(in srgb, var(--accent, #409eff) 18%, transparent);
+  color: var(--accent, #409eff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #409eff) 55%, transparent);
+}
+
+/* "全部 / 键 / 值" 切换：与 .format-switch 同款视觉，避免引入新风格 */
+.search-target-switch {
+  display: inline-flex;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.search-target-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 4px;
+  line-height: 1.4;
+  transition: background 0.12s, color 0.12s;
+}
+.search-target-btn:hover {
+  color: var(--text);
+}
+.search-target-btn.active {
+  background: var(--panel-2);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px var(--border-strong);
+  font-weight: 500;
 }
 .search-meta {
   display: flex;

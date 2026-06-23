@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Tidak ada hasil',
     searchPrev: 'Hasil sebelumnya',
     searchNext: 'Hasil berikutnya',
+    searchPlaceholderRegex: 'Cari dengan regex…',
+    regexToggle: 'Gunakan ekspresi reguler',
+    regexInvalid: 'Regex tidak valid',
+    searchTargetLabel: 'Sasaran pencarian',
+    searchTargetAll: 'Semua',
+    searchTargetKey: 'Kunci',
+    searchTargetValue: 'Nilai',
   },
 
   consent: {

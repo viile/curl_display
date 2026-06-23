@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Няма съвпадения',
     searchPrev: 'Предишно съвпадение',
     searchNext: 'Следващо съвпадение',
+    searchPlaceholderRegex: 'Търсене с регулярен израз…',
+    regexToggle: 'Използване на регулярен израз',
+    regexInvalid: 'Невалиден регулярен израз',
+    searchTargetLabel: 'Цел на търсене',
+    searchTargetAll: 'Всичко',
+    searchTargetKey: 'Ключ',
+    searchTargetValue: 'Стойност',
   },
 
   consent: {

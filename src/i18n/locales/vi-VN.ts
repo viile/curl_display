@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Không có kết quả',
     searchPrev: 'Kết quả trước',
     searchNext: 'Kết quả tiếp theo',
+    searchPlaceholderRegex: 'Tìm bằng biểu thức chính quy…',
+    regexToggle: 'Dùng biểu thức chính quy',
+    regexInvalid: 'Biểu thức chính quy không hợp lệ',
+    searchTargetLabel: 'Phạm vi tìm kiếm',
+    searchTargetAll: 'Tất cả',
+    searchTargetKey: 'Khóa',
+    searchTargetValue: 'Giá trị',
   },
 
   consent: {

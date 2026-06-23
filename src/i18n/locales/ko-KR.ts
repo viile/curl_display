@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: '일치 항목 없음',
     searchPrev: '이전 일치',
     searchNext: '다음 일치',
+    searchPlaceholderRegex: '정규식으로 검색…',
+    regexToggle: '정규식 사용',
+    regexInvalid: '잘못된 정규식',
+    searchTargetLabel: '검색 대상',
+    searchTargetAll: '전체',
+    searchTargetKey: '키',
+    searchTargetValue: '값',
   },
 
   consent: {

@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'لا توجد نتائج',
     searchPrev: 'النتيجة السابقة',
     searchNext: 'النتيجة التالية',
+    searchPlaceholderRegex: 'البحث بتعبير نمطي…',
+    regexToggle: 'استخدام تعبير نمطي',
+    regexInvalid: 'تعبير نمطي غير صالح',
+    searchTargetLabel: 'نطاق البحث',
+    searchTargetAll: 'الكل',
+    searchTargetKey: 'المفتاح',
+    searchTargetValue: 'القيمة',
   },
 
   consent: {

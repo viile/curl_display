@@ -69,6 +69,13 @@ const messages: Messages = {
     searchEmpty: 'Niciun rezultat',
     searchPrev: 'Rezultat anterior',
     searchNext: 'Rezultat următor',
+    searchPlaceholderRegex: 'Caută cu regex…',
+    regexToggle: 'Folosește expresie regulată',
+    regexInvalid: 'Regex invalid',
+    searchTargetLabel: 'Țintă căutare',
+    searchTargetAll: 'Toate',
+    searchTargetKey: 'Cheie',
+    searchTargetValue: 'Valoare',
   },
 
   consent: {
